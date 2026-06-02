@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "site_name": "Divine Dogs",
+    "tagline": "éducatrice canine",
+    "description": "Divine Dogs — Éducation et rééducation canine partout en France. Formée chez Esprit Dog, ACACED et premiers secours canins.",
+    "domain": "divinedogs.fr"
+  },
+  "hero": {
+    "eyebrow": "une relation, pas une méthode",
+    "title_line_1": "Comprendre votre chien,",
+    "title_line_2_before": "changer ",
+    "title_line_2_emphasis": "votre quotidien",
+    "title_line_2_after": ".",
+    "subtitle": "Éducation et rééducation canine en France entière. Une approche bienveillante, basée sur la science du comportement et le respect du lien.",
+    "cta_primary": "Réserver un échange",
+    "cta_secondary": "Découvrir les services",
+    "background_image": "assets/images/hero-bg.jpg"
+  },
+  "approach": {
+    "image": "assets/images/approach.jpg",
+    "badge": "formée chez Esprit Dog",
+    "eyebrow": "à propos",
+    "title_before": "Une approche ",
+    "title_emphasis": "respectueuse",
+    "title_after": ", des résultats durables.",
+    "paragraphs": [
+      "Je suis éducatrice canine, et mon métier ne consiste pas à dresser des chiens — il consiste à vous aider à mieux comprendre le vôtre. Chaque chien est unique, chaque famille aussi.",
+      "Que vous traversiez une période de rééducation, que vous accueilliez un chiot ou que vous souhaitiez approfondir votre lien, je vous accompagne avec écoute, méthode et bienveillance — partout en France."
+    ],
+    "credentials": [
+      "ACACED certifié",
+      "Formation Esprit Dog",
+      "Premiers secours canins",
+      "Toute la France"
+    ]
+  },
+  "services": {
+    "eyebrow": "les services",
+    "title_before": "Pour chaque histoire, une ",
+    "title_emphasis": "réponse adaptée",
+    "title_after": ".",
+    "intro": "De l'arrivée du chiot aux problématiques comportementales installées, mes accompagnements s'adaptent à votre situation, à votre rythme et à votre chien.",
+    "items": [
+      {
+        "id": "chiot",
+        "title": "Éducation du chiot",
+        "description": "Poser les bases sereinement dès l'arrivée : propreté, socialisation, rappel, codes de vie. Tout pour démarrer du bon pied, ensemble.",
+        "icon": "paw"
+      },
+      {
+        "id": "reeducation",
+        "title": "Rééducation comportementale",
+        "description": "Peurs, agressivité, réactivité, anxiété de séparation : un travail en profondeur pour comprendre l'origine et apaiser durablement.",
+        "icon": "heart"
+      },
+      {
+        "id": "quotidien",
+        "title": "Accompagnement quotidien",
+        "description": "Marche en laisse, rappel, vie en société, gestion des invités : les essentiels d'un quotidien apaisé et complice.",
+        "icon": "clock"
+      },
+      {
+        "id": "bilan",
+        "title": "Bilan & conseil à distance",
+        "description": "Une question, un doute, un comportement qui vous interroge : un échange ciblé pour vous orienter, où que vous soyez en France.",
+        "icon": "message"
+      }
+    ]
+  },
+  "pricing": {
+    "title": "Les tarifs arrivent très bientôt",
+    "description": "L'entreprise est en cours d'immatriculation. Les tarifs détaillés des accompagnements seront publiés ici sous peu. En attendant, parlons de votre situation — je vous répondrai personnellement.",
+    "cta": "Me contacter dès maintenant",
+    "items_to_come": []
+  },
+  "testimonials": {
+    "eyebrow": "ils en parlent",
+    "title_before": "Ce que les ",
+    "title_emphasis": "familles",
+    "title_after": " retiennent.",
+    "cta": "Laisser un avis",
+    "items": [
+      {
+        "id": "marie",
+        "stars": 5,
+        "text": "Une écoute incroyable et des conseils qui ont tout changé. Mon chien et moi ne nous comprenions plus, aujourd'hui c'est un nouveau départ.",
+        "author": "Marie L.",
+        "dog": "avec Joya, 2 ans"
+      },
+      {
+        "id": "thomas",
+        "stars": 5,
+        "text": "Une approche bienveillante, jamais culpabilisante. On apprend à comprendre son chien, pas juste à lui dire non. Bluffant.",
+        "author": "Thomas R.",
+        "dog": "avec Pablo, 8 mois"
+      },
+      {
+        "id": "sophie",
+        "stars": 5,
+        "text": "Mon chien réagissait à tout en balade. Après quelques séances, nous arrivons enfin à profiter de nos sorties. Je recommande sans hésiter.",
+        "author": "Sophie M.",
+        "dog": "avec Nala, 4 ans"
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "parlons-en",
+    "title_before": "Une question, un doute, ",
+    "title_emphasis": "une histoire",
+    "title_after": " ?",
+    "description": "Je vous réponds personnellement sous 48h. Décrivez-moi votre chien, votre situation, vos attentes — on en discute ensuite ensemble.",
+    "email": "contact@divinedogs.fr",
+    "instagram_url": "https://instagram.com/divinedogs",
+    "instagram_handle": "@divinedogs",
+    "facebook_url": "https://facebook.com/divinedogs",
+    "facebook_handle": "Divine Dogs",
+    "tiktok_url": "https://tiktok.com/@divinedogs"
+  },
+  "footer": {
+    "description": "Éducation et rééducation canine partout en France. Une approche bienveillante, respectueuse, et fondée sur la compréhension du lien humain-chien.",
+    "year": "2026",
+    "legal_links": [
+      { "label": "Mentions légales", "url": "pages/mentions-legales.html" },
+      { "label": "Politique de confidentialité", "url": "pages/confidentialite.html" },
+      { "label": "CGV", "url": "pages/cgv.html" }
+    ]
+  }
+}
