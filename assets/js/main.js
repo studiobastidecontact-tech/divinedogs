@@ -1,60 +1,106 @@
 /* ==========================================================================
-   Divine Dogs — Script principal
-   Gère : nav scroll, menu mobile, animations reveal, formulaire
+   Divine Dogs — Bootstrap principal
+   Charge data.json, rend le site, attache les comportements
    ========================================================================== */
 
 (function() {
   'use strict';
 
-  // ============ NAV scroll effect ============
-  const nav = document.getElementById('nav');
-  if (nav) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-    });
+  // ============ Chargement des données ============
+  async function loadData() {
+    try {
+      const url = 'data/data.json?t=' + Date.now(); // cache-bust
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } catch (err) {
+      console.error('Erreur chargement data.json:', err);
+      document.body.innerHTML = `
+        <div style="padding:3rem;font-family:sans-serif;text-align:center">
+          <h1>Erreur de chargement</h1>
+          <p>Impossible de charger les données du site.</p>
+          <p style="opacity:.6;font-size:.9em">${err.message}</p>
+        </div>
+      `;
+      return null;
+    }
   }
 
-  // ============ Menu mobile ============
-  const toggle = document.getElementById('menuToggle');
-  const links = document.getElementById('navLinks');
-  if (toggle && links) {
-    toggle.addEventListener('click', () => links.classList.toggle('open'));
-    links.querySelectorAll('a').forEach(a =>
-      a.addEventListener('click', () => links.classList.remove('open'))
-    );
-  }
+  // ============ Comportements interactifs ============
+  function attachBehaviors() {
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    if (nav) {
+      const onScroll = () => {
+        if (window.scrollY > 50) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
 
-  // ============ Reveal animations on scroll ============
-  const reveals = document.querySelectorAll('.reveal');
-  if (reveals.length > 0 && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => entry.target.classList.add('visible'), i * 80);
-          observer.unobserve(entry.target);
-        }
+    // Menu mobile
+    const toggle = document.getElementById('menuToggle');
+    const links = document.getElementById('navLinks');
+    if (toggle && links) {
+      toggle.addEventListener('click', () => links.classList.toggle('open'));
+      links.querySelectorAll('a').forEach(a =>
+        a.addEventListener('click', () => links.classList.remove('open'))
+      );
+    }
+
+    // Reveal animations
+    const reveals = document.querySelectorAll('.reveal');
+    if (reveals.length && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+      reveals.forEach(el => observer.observe(el));
+    }
+
+    // Formulaire de contact (fallback si pas de Formspree configuré)
+    const form = document.querySelector('.contact-form');
+    if (form && !form.action) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Le formulaire n\'est pas encore connecté. Veuillez configurer un endpoint Formspree dans l\'admin.');
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
-    reveals.forEach(el => observer.observe(el));
+    }
   }
 
-  // ============ Formulaire de contact ============
-  const contactForm = document.querySelector('.contact-form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      // TODO : brancher Formspree, Brevo ou autre service d'envoi
-      alert('Formulaire de démonstration — à connecter à un service d\'envoi (Formspree, Brevo, etc.)');
+  // ============ Hide loading ============
+  function hideLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+      loading.classList.add('hidden');
+      setTimeout(() => loading.remove(), 600);
+    }
+  }
+
+  // ============ Init ============
+  async function init() {
+    const data = await loadData();
+    if (!data) return;
+
+    window.DD_DATA = data;
+    window.DD_RENDER.all(data);
+    
+    // Attendre que le DOM soit stable puis attacher comportements
+    requestAnimationFrame(() => {
+      attachBehaviors();
+      hideLoading();
     });
   }
 
-  // ============ Scroll-to-top via logo ============
-  document.querySelectorAll('.logo').forEach(logo => {
-    logo.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
-
+  // Démarrage
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

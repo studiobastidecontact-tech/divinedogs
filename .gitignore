@@ -3,7 +3,7 @@
 Thumbs.db
 desktop.ini
 
-# Éditeurs
+# Editors
 .vscode/
 .idea/
 *.swp
@@ -14,20 +14,9 @@ desktop.ini
 *.log
 npm-debug.log*
 
-# Dépendances (si node.js plus tard)
+# Node (au cas où)
 node_modules/
-package-lock.json
 
-# Fichiers temporaires
-*.tmp
-*.bak
-*.backup
-
-# Fichiers de configuration locale
+# Local
 .env
 .env.local
-config.local.json
-
-# Build
-dist/
-build/

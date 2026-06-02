@@ -1,28 +1,75 @@
 {
+  "version": "2.0.0",
+  "lastUpdated": "2026-06-03T00:00:00Z",
   "meta": {
-    "site_name": "Divine Dogs",
+    "siteName": "Divine Dogs",
     "tagline": "éducatrice canine",
+    "pageTitle": "Divine Dogs — Éducation & Rééducation canine",
     "description": "Divine Dogs — Éducation et rééducation canine partout en France. Formée chez Esprit Dog, ACACED et premiers secours canins.",
-    "domain": "divinedogs.fr"
+    "domain": "divinedogs.fr",
+    "ogImage": "assets/images/og-image.jpg",
+    "favicon": "assets/icons/favicon.svg"
+  },
+  "theme": {
+    "colors": {
+      "espresso": "#3E2723",
+      "espressoDeep": "#2A1A17",
+      "espressoSoft": "#5C3F3A",
+      "butter": "#FFEDCA",
+      "butterDeep": "#F5DCAA",
+      "butterSoft": "#FFF5E0",
+      "cream": "#FFF9ED",
+      "accent": "#C9A57B",
+      "accentWarm": "#D4B68C"
+    },
+    "fonts": {
+      "display": "Zalando Sans SemiExpanded",
+      "body": "Zalando Sans SemiExpanded",
+      "hand": "Caveat"
+    },
+    "fontSizes": {
+      "heroTitle": "clamp(3rem, 8vw, 7rem)",
+      "sectionTitle": "clamp(2.25rem, 5vw, 3.75rem)"
+    },
+    "options": {
+      "showGrainOverlay": true,
+      "enableAnimations": true,
+      "heroBgOpacity": 0.55
+    }
+  },
+  "nav": {
+    "links": [
+      { "id": "approche", "label": "L'approche", "anchor": "#approche", "enabled": true },
+      { "id": "services", "label": "Services", "anchor": "#services", "enabled": true },
+      { "id": "avis", "label": "Avis", "anchor": "#avis", "enabled": true }
+    ],
+    "ctaLabel": "Prendre contact",
+    "ctaAnchor": "#contact"
   },
   "hero": {
+    "enabled": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1551717743-49959800b1f6?auto=format&fit=crop&w=2400&q=80",
     "eyebrow": "une relation, pas une méthode",
-    "title_line_1": "Comprendre votre chien,",
-    "title_line_2_before": "changer ",
-    "title_line_2_emphasis": "votre quotidien",
-    "title_line_2_after": ".",
+    "titlePart1": "Comprendre votre chien,",
+    "titlePart2": "changer ",
+    "titleEmphasis": "votre quotidien",
+    "titlePart3": ".",
     "subtitle": "Éducation et rééducation canine en France entière. Une approche bienveillante, basée sur la science du comportement et le respect du lien.",
-    "cta_primary": "Réserver un échange",
-    "cta_secondary": "Découvrir les services",
-    "background_image": "assets/images/hero-bg.jpg"
+    "ctaPrimaryLabel": "Réserver un échange",
+    "ctaPrimaryAnchor": "#contact",
+    "ctaSecondaryLabel": "Découvrir les services",
+    "ctaSecondaryAnchor": "#services",
+    "scrollHint": "défiler"
   },
   "approach": {
-    "image": "assets/images/approach.jpg",
-    "badge": "formée chez Esprit Dog",
+    "enabled": true,
+    "image": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1200&q=80",
+    "imageAlt": "Moment de complicité entre un chien et son éducatrice",
+    "badge": "formée chez\nEsprit Dog",
     "eyebrow": "à propos",
-    "title_before": "Une approche ",
-    "title_emphasis": "respectueuse",
-    "title_after": ", des résultats durables.",
+    "titlePart1": "Une approche ",
+    "titleEmphasis": "respectueuse",
+    "titlePart2": ", des résultats durables.",
     "paragraphs": [
       "Je suis éducatrice canine, et mon métier ne consiste pas à dresser des chiens — il consiste à vous aider à mieux comprendre le vôtre. Chaque chien est unique, chaque famille aussi.",
       "Que vous traversiez une période de rééducation, que vous accueilliez un chiot ou que vous souhaitiez approfondir votre lien, je vous accompagne avec écoute, méthode et bienveillance — partout en France."
@@ -35,50 +82,57 @@
     ]
   },
   "services": {
+    "enabled": true,
     "eyebrow": "les services",
-    "title_before": "Pour chaque histoire, une ",
-    "title_emphasis": "réponse adaptée",
-    "title_after": ".",
+    "titlePart1": "Pour chaque histoire, une ",
+    "titleEmphasis": "réponse adaptée",
+    "titlePart2": ".",
     "intro": "De l'arrivée du chiot aux problématiques comportementales installées, mes accompagnements s'adaptent à votre situation, à votre rythme et à votre chien.",
     "items": [
       {
         "id": "chiot",
+        "icon": "paw",
         "title": "Éducation du chiot",
-        "description": "Poser les bases sereinement dès l'arrivée : propreté, socialisation, rappel, codes de vie. Tout pour démarrer du bon pied, ensemble.",
-        "icon": "paw"
+        "description": "Poser les bases sereinement dès l'arrivée : propreté, socialisation, rappel, codes de vie. Tout pour démarrer du bon pied, ensemble."
       },
       {
         "id": "reeducation",
+        "icon": "heart",
         "title": "Rééducation comportementale",
-        "description": "Peurs, agressivité, réactivité, anxiété de séparation : un travail en profondeur pour comprendre l'origine et apaiser durablement.",
-        "icon": "heart"
+        "description": "Peurs, agressivité, réactivité, anxiété de séparation : un travail en profondeur pour comprendre l'origine et apaiser durablement."
       },
       {
         "id": "quotidien",
+        "icon": "clock",
         "title": "Accompagnement quotidien",
-        "description": "Marche en laisse, rappel, vie en société, gestion des invités : les essentiels d'un quotidien apaisé et complice.",
-        "icon": "clock"
+        "description": "Marche en laisse, rappel, vie en société, gestion des invités : les essentiels d'un quotidien apaisé et complice."
       },
       {
         "id": "bilan",
+        "icon": "message",
         "title": "Bilan & conseil à distance",
-        "description": "Une question, un doute, un comportement qui vous interroge : un échange ciblé pour vous orienter, où que vous soyez en France.",
-        "icon": "message"
+        "description": "Une question, un doute, un comportement qui vous interroge : un échange ciblé pour vous orienter, où que vous soyez en France."
       }
     ]
   },
   "pricing": {
-    "title": "Les tarifs arrivent très bientôt",
+    "enabled": true,
+    "showAsComingSoon": true,
+    "titlePart1": "Les tarifs arrivent",
+    "titlePart2": "très bientôt",
     "description": "L'entreprise est en cours d'immatriculation. Les tarifs détaillés des accompagnements seront publiés ici sous peu. En attendant, parlons de votre situation — je vous répondrai personnellement.",
-    "cta": "Me contacter dès maintenant",
-    "items_to_come": []
+    "ctaLabel": "Me contacter dès maintenant",
+    "ctaAnchor": "#contact",
+    "items": []
   },
   "testimonials": {
+    "enabled": true,
     "eyebrow": "ils en parlent",
-    "title_before": "Ce que les ",
-    "title_emphasis": "familles",
-    "title_after": " retiennent.",
-    "cta": "Laisser un avis",
+    "titlePart1": "Ce que les ",
+    "titleEmphasis": "familles",
+    "titlePart2": " retiennent.",
+    "ctaLabel": "Laisser un avis",
+    "ctaUrl": "#contact",
     "items": [
       {
         "id": "marie",
@@ -104,22 +158,33 @@
     ]
   },
   "contact": {
+    "enabled": true,
     "eyebrow": "parlons-en",
-    "title_before": "Une question, un doute, ",
-    "title_emphasis": "une histoire",
-    "title_after": " ?",
+    "titlePart1": "Une question, un doute, ",
+    "titleEmphasis": "une histoire",
+    "titlePart2": " ?",
     "description": "Je vous réponds personnellement sous 48h. Décrivez-moi votre chien, votre situation, vos attentes — on en discute ensuite ensemble.",
     "email": "contact@divinedogs.fr",
-    "instagram_url": "https://instagram.com/divinedogs",
-    "instagram_handle": "@divinedogs",
-    "facebook_url": "https://facebook.com/divinedogs",
-    "facebook_handle": "Divine Dogs",
-    "tiktok_url": "https://tiktok.com/@divinedogs"
+    "instagramUrl": "https://instagram.com/divinedogs",
+    "instagramHandle": "@divinedogs",
+    "facebookUrl": "https://facebook.com/divinedogs",
+    "facebookHandle": "Divine Dogs",
+    "tiktokUrl": "https://tiktok.com/@divinedogs",
+    "formspreeEndpoint": "",
+    "formSubjects": [
+      "Éducation du chiot",
+      "Rééducation comportementale",
+      "Accompagnement quotidien",
+      "Bilan & conseil à distance",
+      "Autre / je ne sais pas encore"
+    ]
   },
   "footer": {
     "description": "Éducation et rééducation canine partout en France. Une approche bienveillante, respectueuse, et fondée sur la compréhension du lien humain-chien.",
     "year": "2026",
-    "legal_links": [
+    "navigationTitle": "Navigation",
+    "legalTitle": "Légal",
+    "legalLinks": [
       { "label": "Mentions légales", "url": "pages/mentions-legales.html" },
       { "label": "Politique de confidentialité", "url": "pages/confidentialite.html" },
       { "label": "CGV", "url": "pages/cgv.html" }
