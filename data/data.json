@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "lastUpdated": "2026-06-03T00:00:00Z",
+  "lastUpdated": "2026-06-02T23:35:12.597Z",
   "meta": {
     "siteName": "Divine Dogs",
     "tagline": "éducatrice canine",
-    "pageTitle": "Divine Dogs — Éducation & Rééducation canine",
-    "description": "Divine Dogs — Éducation et rééducation canine partout en France. Formée chez Esprit Dog, ACACED et premiers secours canins.",
+    "pageTitle": "Divine Dogs  Éducation & Rééducation canine",
+    "description": "Divine Dogs Éducation et rééducation canine partout en France. Formée chez Esprit Dog, ACACED et premiers secours canins.",
     "domain": "divinedogs.fr",
     "ogImage": "assets/images/og-image.jpg",
     "favicon": "assets/icons/favicon.svg"
@@ -39,9 +39,24 @@
   },
   "nav": {
     "links": [
-      { "id": "approche", "label": "L'approche", "anchor": "#approche", "enabled": true },
-      { "id": "services", "label": "Services", "anchor": "#services", "enabled": true },
-      { "id": "avis", "label": "Avis", "anchor": "#avis", "enabled": true }
+      {
+        "id": "approche",
+        "label": "L'approche",
+        "anchor": "#approche",
+        "enabled": true
+      },
+      {
+        "id": "services",
+        "label": "Services",
+        "anchor": "#services",
+        "enabled": true
+      },
+      {
+        "id": "avis",
+        "label": "Avis",
+        "anchor": "#avis",
+        "enabled": true
+      }
     ],
     "ctaLabel": "Prendre contact",
     "ctaAnchor": "#contact"
@@ -185,9 +200,18 @@
     "navigationTitle": "Navigation",
     "legalTitle": "Légal",
     "legalLinks": [
-      { "label": "Mentions légales", "url": "pages/mentions-legales.html" },
-      { "label": "Politique de confidentialité", "url": "pages/confidentialite.html" },
-      { "label": "CGV", "url": "pages/cgv.html" }
+      {
+        "label": "Mentions légales",
+        "url": "pages/mentions-legales.html"
+      },
+      {
+        "label": "Politique de confidentialité",
+        "url": "pages/confidentialite.html"
+      },
+      {
+        "label": "CGV",
+        "url": "pages/cgv.html"
+      }
     ]
   }
 }
