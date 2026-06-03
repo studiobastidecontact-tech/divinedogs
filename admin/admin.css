@@ -326,7 +326,7 @@ body {
 /* ============ FORM FIELDS ============ */
 .field { margin-bottom: 1.25rem; }
 .field:last-child { margin-bottom: 0; }
-.field label {
+.field > label {
   display: block;
   font-size: .8rem;
   font-weight: 600;
@@ -334,6 +334,18 @@ body {
   margin-bottom: .4rem;
   letter-spacing: .02em;
   text-transform: uppercase;
+}
+.field > label.toggle {
+  text-transform: none;
+  font-size: .95rem;
+  font-weight: 500;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  color: var(--a-text);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  cursor: pointer;
 }
 .field .help {
   font-size: .8rem;
@@ -411,8 +423,15 @@ body {
   display: flex; align-items: center; gap: .75rem;
   cursor: pointer;
   user-select: none;
+  position: relative;
 }
-.toggle input { position: absolute; opacity: 0; }
+.toggle input { 
+  position: absolute; 
+  opacity: 0; 
+  width: 0; 
+  height: 0; 
+  pointer-events: none;
+}
 .toggle .slider {
   width: 44px; height: 24px;
   background: var(--a-border);
