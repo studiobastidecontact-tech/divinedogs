@@ -1,22 +1,7 @@
-# OS
 .DS_Store
 Thumbs.db
-desktop.ini
-
-# Editors
+node_modules/
+*.log
+.env
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-
-# Logs
-*.log
-npm-debug.log*
-
-# Node (au cas où)
-node_modules/
-
-# Local
-.env
-.env.local
