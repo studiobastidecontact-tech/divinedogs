@@ -3,22 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin · DIVINE DOGS</title>
-<meta name="robots" content="noindex,nofollow">
-
+<title>Admin — Divine Dogs</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@300;400;500;600;700&family=Zalando+Sans+SemiExpanded:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@300;400;500;600;700&family=Zalando+Sans+SemiExpanded:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
+<!-- LOGIN -->
+<div id="login" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">Divine Dogs</div>
+    <p class="login-sub">Espace d'administration du site</p>
+    <form id="loginForm">
+      <div id="loginError" class="login-error"></div>
+      <label for="tokenInput">Clé d'accès GitHub</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off">
+      <div class="remember">
+        <input type="checkbox" id="rememberInput">
+        <label for="rememberInput" style="margin:0;font-weight:400">Rester connectée sur cet appareil</label>
+      </div>
+      <button type="submit" id="loginBtn" class="btn-full">Se connecter</button>
+      <p class="login-help">Cette clé vous a été fournie par Studio Bastide. Elle vous permet d'enregistrer vos modifications en toute sécurité. Ne la partagez avec personne.</p>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="topbar-logo">Divine Dogs</div>
+    <div class="topbar-actions">
+      <button id="langBtn" class="tb-btn"><span id="langLabel">FR</span></button>
+      <a href="../index.html" target="_blank" rel="noopener" class="tb-btn"><span>Voir le site</span></a>
+      <button id="logoutBtn" class="tb-btn"><span>Déconnexion</span></button>
+      <button id="saveBtn" class="tb-btn tb-save"><span>Publier</span></button>
+    </div>
+  </div>
+  <div class="layout">
+    <aside id="sideNav" class="sidebar"></aside>
+    <div id="editorWrap" class="editor-wrap">
+      <div id="editor" class="editor"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
 <script src="../assets/js/icons.js"></script>
 <script src="admin-github.js"></script>
 <script src="admin-ui.js"></script>
-
 </body>
 </html>

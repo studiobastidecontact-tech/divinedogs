@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — DIVINE DOGS</title>
+<meta name="description" content="Les services d'éducation et de rééducation canine de Divine Dogs : bilan comportemental, éducation, troubles du comportement, chiot, désensibilisation.">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@300;400;500;600;700&family=Zalando+Sans+SemiExpanded:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="loading" class="loading-state"><div class="spinner"></div><p>DIVINE DOGS</p></div>
+<div id="announce-slot"></div>
+<nav id="nav"></nav>
+<main id="main"></main>
+<footer id="footer"></footer>
+<div id="extras"></div>
+
+<script src="assets/js/icons.js" defer></script>
+<script src="assets/js/render.js" defer></script>
+<script src="assets/js/main.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', async () => {
+  // Attendre que render.js et behaviors soient prêts
+  const ready = () => window.DD_RENDER && window.DD_BEHAVIORS;
+  while (!ready()) await new Promise(r => setTimeout(r, 30));
+
+  const R = window.DD_RENDER, B = window.DD_BEHAVIORS;
+  const data = await B.loadData();
+  if (!data) return;
+  window.DD_LANG = B.getStoredLang() || data.defaultLang || 'fr';
+  window.DD_DATA = data;
+
+  function render() {
+    R.meta(data);
+    if (data.theme) R.theme(data.theme);
+    const L = R.lang(data);
+    const sp = (data.servicesPage && data.servicesPage[L]) || (data.servicesPage && data.servicesPage.fr) || {};
+    const contact = R.lang(data, 'nav').links?.find(x => x.id === 'contact');
+
+    document.getElementById('announce-slot').innerHTML = R.announce(data);
+    document.getElementById('nav').innerHTML = R.nav(data, 'services');
+    document.getElementById('footer').innerHTML = R.footer(data);
+    document.getElementById('extras').innerHTML = R.backTop();
+
+    const items = (sp.items || []).map(s => `
+      <article class="service-card reveal">
+        <div class="service-head">
+          <h2 class="service-name">${R.esc(s.name)}</h2>
+          <div class="service-meta">
+            ${s.duration ? `<span class="service-duration">${window.icon('clock', 14)} ${R.esc(s.duration)}</span>` : ''}
+          </div>
+        </div>
+        <p class="service-text">${R.esc(s.text)}</p>
+        ${s.note ? `<div class="service-note">${R.esc(s.note)}</div>` : ''}
+        ${(s.includes && s.includes.length) ? `
+          ${s.includesTitle ? `<div class="service-includes-title">${R.esc(s.includesTitle)}</div>` : ''}
+          <ul class="service-includes">
+            ${s.includes.map(i => `<li>${window.icon('checkCircle', 18)} <span>${R.esc(i)}</span></li>`).join('')}
+          </ul>` : ''}
+      </article>`).join('');
+
+    document.getElementById('main').innerHTML = `
+      <section class="subhero">
+        <span class="section-eyebrow">${R.esc(sp.eyebrow || '')}</span>
+        <h1>${R.highlightWords(sp.title || '', sp.highlights || [])}</h1>
+        ${sp.intro ? `<p>${R.esc(sp.intro)}</p>` : ''}
+      </section>
+      <section class="section">
+        <div class="services-list">${items}</div>
+        ${contact ? `<div class="services-cta"><a href="${R.esc(contact.anchor)}" class="btn btn-primary">${R.esc(sp.ctaLabel || contact.label)} ${window.icon('arrowRight', 16)}</a></div>` : ''}
+      </section>`;
+
+    requestAnimationFrame(() => B.attachCommon(data, { onLangChange: render }));
+  }
+
+  render();
+  requestAnimationFrame(() => B.hideLoading());
+});
+</script>
+</body>
+</html>

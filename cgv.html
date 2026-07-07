@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divine Dogs</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Inter:wght@300;400;500;600;700&family=Zalando+Sans+SemiExpanded:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="legal-page">
+<div id="announce-slot"></div>
+<nav id="nav"></nav>
+<div class="legal-content" id="legal"></div>
+<footer id="footer"></footer>
+<div id="extras"></div>
+<script src="assets/js/icons.js" defer></script>
+<script src="assets/js/render.js" defer></script>
+<script src="assets/js/main.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', async () => {
+  const ready = () => window.DD_RENDER && window.DD_BEHAVIORS;
+  while (!ready()) await new Promise(r => setTimeout(r, 30));
+  const R = window.DD_RENDER, B = window.DD_BEHAVIORS;
+  const data = await B.loadData();
+  if (!data) return;
+  window.DD_LANG = B.getStoredLang() || data.defaultLang || 'fr';
+  const TYPE = 'cgv';
+
+  function render() {
+    R.meta(data);
+    if (data.theme) R.theme(data.theme);
+    const L = R.lang(data);
+    const legal = (data.legal && data.legal[L]) || (data.legal && data.legal.fr) || {};
+    const block = legal[TYPE] || {};
+    document.getElementById('announce-slot').innerHTML = R.announce(data);
+    document.getElementById('nav').innerHTML = R.nav(data, '');
+    document.getElementById('footer').innerHTML = R.footer(data);
+    document.getElementById('extras').innerHTML = R.backTop();
+
+    let html = '<a href="index.html" class="legal-back">' + window.icon('arrowRight',16) + ' Retour au site</a>';
+    html += '<h1>' + R.esc(block.title || '') + '</h1>';
+    if (TYPE === 'mentions') {
+      ['editor','director','host','contact'].forEach(k => { if (block[k]) html += '<p>' + R.esc(block[k]) + '</p>'; });
+    } else if (TYPE === 'cgv') {
+      if (block.payment) { html += '<h2>Paiement</h2><p>' + R.esc(block.payment) + '</p>'; }
+      if (block.cancellation) { html += '<h2>Annulation</h2><p>' + R.esc(block.cancellation) + '</p>'; }
+      if (block.refund) { html += '<h2>Remboursement</h2><p>' + R.esc(block.refund) + '</p>'; }
+    } else {
+      if (block.body) html += '<p>' + R.esc(block.body) + '</p>';
+    }
+    document.getElementById('legal').innerHTML = html;
+    document.title = (block.title || 'Divine Dogs') + ' — Divine Dogs';
+    requestAnimationFrame(() => B.attachCommon(data, { onLangChange: render }));
+  }
+  render();
+});
+</script>
+</body>
+</html>

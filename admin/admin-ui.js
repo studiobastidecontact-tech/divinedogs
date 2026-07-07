@@ -1,844 +1,442 @@
 /* ==========================================================================
-   Divine Dogs Admin v3 — Interface UI
+   Divine Dogs — Admin · Interface (mini-CMS)
    ========================================================================== */
-
 (function() {
   'use strict';
+  const GH = window.DD_GH;
+  const G = { data: null, sha: null, lang: 'fr', section: 'general', dirty: false };
 
-  const state = {
-    data: null,
-    sha: null,
-    dirty: false,
-    saving: false,
-    currentSection: 'meta',
-    currentLang: 'fr',
-    user: null
-  };
-
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-  function esc(s) {
-    if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  }
-
-  function toast(msg, type = 'info', duration = 3500) {
-    const container = $('#toast-container');
-    if (!container) return;
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    const iconMap = { success: 'check', error: 'x', warning: 'settings', info: 'edit' };
-    el.innerHTML = `${window.icon(iconMap[type] || 'edit', 18)} <span>${esc(msg)}</span>`;
-    container.appendChild(el);
-    setTimeout(() => {
-      el.style.transition = 'opacity .3s, transform .3s';
-      el.style.opacity = '0';
-      el.style.transform = 'translateX(120%)';
-      setTimeout(() => el.remove(), 350);
-    }, duration);
-  }
-
-  function modal({ title, message, confirmLabel = 'Confirmer', cancelLabel = 'Annuler', danger = false }) {
-    return new Promise(resolve => {
-      const overlay = document.createElement('div');
-      overlay.className = 'modal-overlay';
-      overlay.innerHTML = `
-        <div class="modal">
-          <h2>${esc(title)}</h2>
-          <p>${esc(message)}</p>
-          <div class="actions">
-            <button class="btn btn-ghost" data-action="cancel">${esc(cancelLabel)}</button>
-            <button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-action="confirm">${esc(confirmLabel)}</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      overlay.addEventListener('click', e => {
-        if (e.target === overlay || e.target.dataset.action === 'cancel') { overlay.remove(); resolve(false); }
-        else if (e.target.dataset.action === 'confirm') { overlay.remove(); resolve(true); }
-      });
-    });
-  }
-
-  function markDirty() {
-    state.dirty = true;
-    updateSaveStatus();
-  }
-
-  function updateSaveStatus() {
-    const status = $('#save-status');
-    const saveBtn = $('#save-btn');
-    if (!status) return;
-    status.classList.remove('saved', 'error');
-    if (state.saving) {
-      status.innerHTML = `<span class="dot"></span> <span>Enregistrement…</span>`;
-      if (saveBtn) saveBtn.disabled = true;
-    } else if (state.dirty) {
-      status.innerHTML = `<span class="dot"></span> <span>Modifs non publiées</span>`;
-      if (saveBtn) saveBtn.disabled = false;
-    } else {
-      status.innerHTML = `<span class="dot"></span> <span>Tout est à jour</span>`;
-      status.classList.add('saved');
-      if (saveBtn) saveBtn.disabled = true;
+  /* ---------- utilitaires ---------- */
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => (s == null ? '' : String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'));
+  const resolve = (path) => path.split('.').map(s => (s === 'L' ? G.lang : s));
+  function getPath(obj, path) { let c = obj; for (const k of resolve(path)) { if (c == null) return undefined; c = c[k]; } return c; }
+  function setPath(obj, path, val) {
+    const ks = resolve(path); let c = obj;
+    for (let i = 0; i < ks.length - 1; i++) {
+      const k = ks[i];
+      if (c[k] == null) c[k] = /^\d+$/.test(String(ks[i + 1])) ? [] : {};
+      c = c[k];
     }
+    c[ks[ks.length - 1]] = val;
   }
+  function toast(msg, type = 'ok') {
+    const t = document.createElement('div');
+    t.className = 'toast ' + type; t.textContent = msg;
+    $('#toasts').appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3800);
+  }
+  const markDirty = () => { G.dirty = true; $('#saveBtn')?.classList.add('pulse'); };
 
-  // ============ LOGIN ============
-  function renderLogin() {
-    document.body.innerHTML = `
-      <div class="login-screen">
-        <div class="login-card">
-          <div class="login-logo">
-            <span class="name">DIVINE DOGS</span>
-          </div>
-          <h1>Connexion</h1>
-          <p class="subtitle">Espace réservé à la gestion du site</p>
-          <form class="login-form" id="login-form">
-            <div>
-              <label>Email</label>
-              <input type="email" id="email" placeholder="vous@exemple.com" required autocomplete="username">
-            </div>
-            <div>
-              <label>Token GitHub</label>
-              <input type="password" id="token" placeholder="ghp_..." required autocomplete="current-password">
-              <p class="hint">
-                <a href="https://github.com/settings/tokens/new?scopes=repo&description=Divine%20Dogs%20Admin" target="_blank" rel="noopener">Créer un token ici</a> · scope <strong>repo</strong> · expiration <strong>No expiration</strong>
-              </p>
-            </div>
-            <div id="login-error" style="display:none"></div>
-            <button type="submit" class="btn btn-primary" style="justify-content:center;padding:.85rem">Se connecter</button>
-          </form>
-        </div>
+  /* ---------- constructeurs de champs ---------- */
+  function fText(label, path, ph = '') {
+    return `<div class="field"><label>${esc(label)}</label><input type="text" data-path="${path}" value="${esc(getPath(G.data, path) || '')}" placeholder="${esc(ph)}"></div>`;
+  }
+  function fTextarea(label, path, ph = '', rows = 4) {
+    return `<div class="field"><label>${esc(label)}</label><textarea rows="${rows}" data-path="${path}" placeholder="${esc(ph)}">${esc(getPath(G.data, path) || '')}</textarea></div>`;
+  }
+  function fToggle(label, path) {
+    const on = getPath(G.data, path) !== false;
+    return `<div class="field-toggle"><label class="switch"><input type="checkbox" data-path="${path}" data-type="bool" ${on ? 'checked' : ''}><span class="slider"></span></label><span>${esc(label)}</span></div>`;
+  }
+  function fHighlights(label, path) {
+    const arr = getPath(G.data, path) || [];
+    return `<div class="field"><label>${esc(label)} <span class="hint">séparés par des virgules — affichés en rose</span></label><input type="text" data-path="${path}" data-type="csv" value="${esc(arr.join(', '))}"></div>`;
+  }
+  function fSelect(label, path, options) {
+    const val = getPath(G.data, path);
+    return `<div class="field"><label>${esc(label)}</label><select data-path="${path}">${options.map(o => `<option value="${o.v}" ${o.v === val ? 'selected' : ''}>${esc(o.t)}</option>`).join('')}</select></div>`;
+  }
+  function fNumber(label, path, min = 1, max = 5) {
+    return `<div class="field field-sm"><label>${esc(label)}</label><input type="number" min="${min}" max="${max}" data-path="${path}" data-type="num" value="${esc(getPath(G.data, path) || min)}"></div>`;
+  }
+  function fImage(label, path) {
+    const val = getPath(G.data, path) || '';
+    return `<div class="field"><label>${esc(label)}</label>
+      <div class="img-field">
+        <input type="text" data-path="${path}" value="${esc(val)}" placeholder="URL ou chemin de l'image">
+        <button type="button" class="btn-mini" data-upload="${path}">${window.icon('upload', 15)} Téléverser</button>
       </div>
-    `;
-    $('#login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = $('#email').value.trim();
-      const token = $('#token').value.trim();
-      const errorEl = $('#login-error');
-      errorEl.style.display = 'none';
-      try {
-        window.DD_GH.saveSession(token, email);
-        const { user } = await window.DD_GH.verifyAccess();
-        state.user = user;
-        await initAdmin();
-      } catch (err) {
-        window.DD_GH.clearSession();
-        errorEl.className = 'login-error';
-        errorEl.style.display = 'block';
-        errorEl.textContent = '❌ ' + err.message;
-      }
-    });
+      ${val ? `<div class="img-preview"><img src="${esc(val.startsWith('http') ? val : '../' + val)}" alt="" onerror="this.style.display='none'"></div>` : ''}
+    </div>`;
   }
-
-  // ============ APP SHELL ============
-  function renderShell() {
-    document.body.innerHTML = `
-      <div class="admin-layout">
-        <aside class="sidebar">
-          <div class="sidebar-header">
-            <div class="sidebar-logo">DIVINE DOGS</div>
-            <div class="sidebar-meta">Administration</div>
-          </div>
-          <div class="lang-switcher" id="langSwitcher">
-            <button data-lang="fr" class="${state.currentLang === 'fr' ? 'active' : ''}">🇫🇷 FRANÇAIS</button>
-            <button data-lang="en" class="${state.currentLang === 'en' ? 'active' : ''}">🇬🇧 ENGLISH</button>
-          </div>
-          <ul class="sidebar-nav" id="nav-tabs">
-            <li><button data-section="meta">${window.icon('settings')} <span>Général</span></button></li>
-            <li><button data-section="theme">${window.icon('palette')} <span>Couleurs</span></button></li>
-            <li><button data-section="hero">${window.icon('image')} <span>Accueil</span></button></li>
-            <li><button data-section="presentation">${window.icon('type')} <span>Présentation</span></button></li>
-            <li><button data-section="notWhat">${window.icon('layout')} <span>Ce que DD n'est pas</span></button></li>
-            <li><button data-section="services">${window.icon('layout')} <span>Services</span></button></li>
-            <li><button data-section="contact">${window.icon('mail')} <span>Contact</span></button></li>
-            <li><button data-section="testimonials">${window.icon('starFilled')} <span>Avis</span></button></li>
-            <li><button data-section="social">${window.icon('instagram')} <span>Réseaux</span></button></li>
-            <li><button data-section="footer">${window.icon('link')} <span>Footer</span></button></li>
-          </ul>
-          <div class="sidebar-footer">
-            <div class="save-status saved" id="save-status"><span class="dot"></span> <span>Tout est à jour</span></div>
-            <div class="actions">
-              <button id="logout-btn">${window.icon('logout', 14)} Sortir</button>
-              <button class="primary" id="save-btn" disabled>${window.icon('save', 14)} Publier</button>
-            </div>
-          </div>
-        </aside>
-        <main class="main-content" id="main-content"></main>
+  function fStringList(label, listPath) {
+    const arr = getPath(G.data, listPath) || [];
+    return `<div class="field"><label>${esc(label)}</label>
+      <div class="list-simple" data-list="${listPath}">
+        ${arr.map((v, i) => `<div class="list-row"><input type="text" data-path="${listPath}.${i}" value="${esc(v)}">
+          <button type="button" class="ico" data-act="up" data-list="${listPath}" data-i="${i}" title="Monter">▲</button>
+          <button type="button" class="ico" data-act="down" data-list="${listPath}" data-i="${i}" title="Descendre">▼</button>
+          <button type="button" class="ico del" data-act="del" data-list="${listPath}" data-i="${i}" title="Supprimer">${window.icon('trash', 14)}</button>
+        </div>`).join('')}
       </div>
-      <div class="toast-container" id="toast-container"></div>
-    `;
-
-    $$('[data-section]').forEach(btn => {
-      btn.addEventListener('click', () => switchSection(btn.dataset.section));
-    });
-    $$('[data-lang]').forEach(btn => {
-      btn.addEventListener('click', () => switchLang(btn.dataset.lang));
-    });
-    $('#save-btn').addEventListener('click', publishChanges);
-    $('#logout-btn').addEventListener('click', async () => {
-      if (state.dirty) {
-        const ok = await modal({
-          title: 'Quitter sans publier ?',
-          message: 'Vos modifications seront perdues.',
-          confirmLabel: 'Quitter',
-          danger: true
-        });
-        if (!ok) return;
-      }
-      window.DD_GH.clearSession();
-      location.reload();
-    });
-
-    window.addEventListener('beforeunload', (e) => {
-      if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
-    });
+      <button type="button" class="btn-mini add" data-act="add-str" data-list="${listPath}">${window.icon('plus', 14)} Ajouter</button>
+    </div>`;
   }
 
-  function switchSection(name) {
-    state.currentSection = name;
-    $$('[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === name));
-    renderSection(name);
-  }
-
-  function switchLang(lang) {
-    state.currentLang = lang;
-    $$('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
-    renderSection(state.currentSection);
-  }
-
-  // ============ SECTION RENDERING ============
-  function renderSection(name) {
-    const main = $('#main-content');
-    if (!main) return;
-    const renderers = {
-      meta: renderMeta, theme: renderTheme, hero: renderHero,
-      presentation: renderPresentation, notWhat: renderNotWhat,
-      services: renderServices, contact: renderContact,
-      testimonials: renderTestimonials, social: renderSocial, footer: renderFooter
-    };
-    main.innerHTML = (renderers[name] || (() => '<p>Section inconnue</p>'))();
-    attachFieldListeners();
-  }
-
-  function sectionHeader(title, subtitle, hasI18n = true) {
-    return `
-      <div class="section-header">
-        <div>
-          <h1>${esc(title)}${hasI18n ? `<span class="lang-badge">${state.currentLang.toUpperCase()}</span>` : ''}</h1>
-          <p class="subtitle">${esc(subtitle)}</p>
-        </div>
-        <a href="../" target="_blank" class="preview-link">${window.icon('upRight')} Voir le site</a>
-      </div>
-    `;
-  }
-
-  function textField(label, path, opts = {}) {
-    const value = getByPath(state.data, path) || '';
-    const help = opts.help ? `<p class="help">${esc(opts.help)}</p>` : '';
-    return `
-      <div class="field">
-        <label>${esc(label)}</label>
-        <input type="${opts.type || 'text'}" data-bind="${esc(path)}" value="${esc(value)}" placeholder="${esc(opts.placeholder || '')}">
-        ${help}
-      </div>
-    `;
-  }
-
-  function textareaField(label, path, opts = {}) {
-    const value = getByPath(state.data, path) || '';
-    const help = opts.help ? `<p class="help">${esc(opts.help)}</p>` : '';
-    return `
-      <div class="field">
-        <label>${esc(label)}</label>
-        <textarea data-bind="${esc(path)}" rows="${opts.rows || 3}" placeholder="${esc(opts.placeholder || '')}">${esc(value)}</textarea>
-        ${help}
-      </div>
-    `;
-  }
-
-  function highlightsField(label, path, sourceTextPath) {
-    const arr = getByPath(state.data, path) || [];
-    return `
-      <div class="highlights-field">
-        <div class="label-mini">🌸 ${esc(label)} (apparaîtront en rose)</div>
-        <div class="highlights-chips" data-chips="${esc(path)}">
-          ${arr.map((w, i) => `
-            <span class="highlight-chip">
-              ${esc(w)}
-              <button type="button" data-remove-chip="${esc(path)}.${i}">×</button>
-            </span>
-          `).join('')}
-        </div>
-        <div class="highlights-add">
-          <input type="text" placeholder="Ajouter un mot/groupe à mettre en rose..." data-chip-input="${esc(path)}">
-          <button type="button" data-add-chip="${esc(path)}">Ajouter</button>
-        </div>
-      </div>
-    `;
-  }
-
-  function imageField(label, path, opts = {}) {
-    const value = getByPath(state.data, path) || '';
-    return `
-      <div class="field">
-        <label>${esc(label)}</label>
-        <div class="image-field">
-          <div class="image-preview">
-            ${value ? `<img src="${esc(value)}" alt="">` : `<div class="empty">${window.icon('image', 32)} <span>Aucune image</span></div>`}
-          </div>
-          <div class="image-actions">
-            <input type="file" accept="image/*" data-upload="${esc(path)}" style="display:none" id="up-${esc(path).replace(/[^a-z0-9]/gi,'_')}">
-            <label for="up-${esc(path).replace(/[^a-z0-9]/gi,'_')}" class="btn btn-secondary btn-sm">${window.icon('upload', 14)} Uploader</label>
-            <input type="text" data-bind="${esc(path)}" value="${esc(value)}" placeholder="…ou collez une URL" style="flex:1;min-width:200px">
+  /* Liste d'objets générique.
+     itemFields: [{type,key,label,options?,lang?}]  (lang=true => sous currentLang)
+     template: objet ajouté au clic sur "Ajouter" */
+  function objectList(label, listPath, itemFields, template, titleKey) {
+    const arr = getPath(G.data, listPath) || [];
+    const items = arr.map((it, i) => {
+      const head = titleKey ? (getPath(G.data, `${listPath}.${i}.${titleKey}`) || `Élément ${i + 1}`) : `Élément ${i + 1}`;
+      const body = itemFields.map(f => {
+        const p = `${listPath}.${i}.${f.lang ? 'L.' : ''}${f.key}`;
+        if (f.type === 'text') return fText(f.label, p, f.ph || '');
+        if (f.type === 'textarea') return fTextarea(f.label, p, f.ph || '', f.rows || 4);
+        if (f.type === 'highlights') return fHighlights(f.label, p);
+        if (f.type === 'select') return fSelect(f.label, p, f.options);
+        if (f.type === 'number') return fNumber(f.label, p, f.min, f.max);
+        if (f.type === 'stringlist') return fStringList(f.label, p);
+        return '';
+      }).join('');
+      return `<div class="obj-card">
+        <div class="obj-head"><strong>${esc(head)}</strong>
+          <div class="obj-actions">
+            <button type="button" class="ico" data-act="up" data-list="${listPath}" data-i="${i}" title="Monter">▲</button>
+            <button type="button" class="ico" data-act="down" data-list="${listPath}" data-i="${i}" title="Descendre">▼</button>
+            <button type="button" class="ico del" data-act="del" data-list="${listPath}" data-i="${i}" title="Supprimer">${window.icon('trash', 14)}</button>
           </div>
         </div>
-      </div>
-    `;
+        <div class="obj-body">${body}</div>
+      </div>`;
+    }).join('');
+    return `<div class="objlist"><div class="objlist-label">${esc(label)}</div>${items}
+      <button type="button" class="btn-mini add" data-act="add-obj" data-list="${listPath}" data-tpl='${esc(JSON.stringify(template))}'>${window.icon('plus', 14)} Ajouter</button>
+    </div>`;
   }
 
-  function toggleField(label, path, help) {
-    const value = getByPath(state.data, path) !== false;
-    return `
-      <div class="field">
-        <label class="toggle">
-          <input type="checkbox" data-bind-bool="${esc(path)}" ${value ? 'checked' : ''}>
-          <span class="slider"></span>
-          <span>${esc(label)}</span>
-        </label>
-        ${help ? `<p class="help" style="margin-top:.4rem">${esc(help)}</p>` : ''}
-      </div>
-    `;
+  function group(title, inner, note) {
+    return `<div class="group"><h3 class="group-title">${esc(title)}</h3>${note ? `<p class="group-note">${esc(note)}</p>` : ''}${inner}</div>`;
   }
 
-  function colorField(label, key) {
-    const value = state.data.theme?.colors?.[key] || '#000000';
-    return `
-      <label class="color-field" for="col-${key}">
-        <div class="swatch" style="background:${esc(value)}"></div>
-        <div class="info">
-          <div class="name">${esc(label)}</div>
-          <div class="value">${esc(value)}</div>
-        </div>
-        <input type="color" id="col-${key}" data-color="${esc(key)}" value="${esc(value)}">
-      </label>
-    `;
-  }
+  /* ---------- définitions des sections ---------- */
+  const SECTIONS = [
+    { id: 'general', label: 'Général & SEO', icon: 'settings', render: () => {
+      return group('Titre & description (SEO Google)',
+        fText('Titre de l\'onglet / Google', 'meta.L.pageTitle', '~60 caractères') +
+        fTextarea('Description Google', 'meta.L.description', '~155 caractères', 2), 'Ce qui s\'affiche dans les résultats de recherche Google.')
+      + group('Coordonnées',
+        fText('Email de contact', 'contactInfo.email') +
+        fText('Téléphone', 'contactInfo.phone') +
+        fToggle('Afficher le téléphone publiquement', 'contactInfo.phonePublic') +
+        fText('Horaires', 'contactInfo.hours') +
+        fText('Zones d\'intervention', 'contactInfo.areas'));
+    }},
+    { id: 'bandeau', label: 'Bandeau d\'annonce', icon: 'tag', render: () =>
+      group('Bandeau en haut du site',
+        fToggle('Afficher le bandeau', 'announce.enabled') +
+        fText('Texte du bandeau', 'announce.L.text'), 'Petit message rose tout en haut. Décochez pour le masquer.')
+    },
+    { id: 'hero', label: 'Bannière (accueil)', icon: 'image', render: () =>
+      group('Bannière d\'accueil',
+        fImage('Photo de fond', 'hero.backgroundImage') +
+        fText('Titre principal', 'hero.L.title') +
+        fHighlights('Mots en rose (dans le titre)', 'hero.L.highlights') +
+        fText('Sous-titre', 'hero.L.subtitle'))
+    },
+    { id: 'presentation', label: 'Présentation', icon: 'layout', render: () =>
+      group('Blocs de présentation',
+        fToggle('Afficher la section', 'presentation.enabled') +
+        objectList('Blocs de texte', 'presentation.L.blocks',
+          [ { type: 'select', key: 'align', label: 'Alignement', options: [{ v: 'left', t: 'Gauche' }, { v: 'right', t: 'Droite' }] },
+            { type: 'textarea', key: 'text', label: 'Texte', rows: 4 },
+            { type: 'highlights', key: 'highlights', label: 'Mots en rose' } ],
+          { id: 'block-' + Date.now(), align: 'left', text: '', highlights: [] }, 'text'))
+    },
+    { id: 'valeurs', label: 'Valeurs', icon: 'checkCircle', render: () =>
+      group('Mes engagements',
+        fToggle('Afficher la section', 'values.enabled') +
+        fText('Sur-titre', 'values.L.eyebrow') +
+        fText('Titre', 'values.L.title') +
+        fHighlights('Mots en rose', 'values.L.highlights') +
+        fTextarea('Devise (phrase en italique)', 'values.L.devise', '', 2) +
+        fStringList('Liste des valeurs', 'values.L.items'))
+    },
+    { id: 'nestpas', label: 'Ce que Divine Dogs n\'est pas', icon: 'x', render: () =>
+      group('Accordéon "n\'est pas"',
+        fToggle('Afficher la section', 'notWhat.enabled') +
+        fText('Titre', 'notWhat.L.title') +
+        fStringList('Points', 'notWhat.L.items'))
+    },
+    { id: 'contact', label: 'Contact & formulaire', icon: 'mail', render: () =>
+      `<div class="callout">${window.icon('send', 18)}<div><strong>Activer le formulaire</strong><p>Créez un compte gratuit sur <a href="https://formspree.io" target="_blank" rel="noopener">formspree.io</a>, créez un formulaire (destinataire : votre email), copiez le lien qui ressemble à <code>https://formspree.io/f/xxxx</code> et collez-le ci-dessous. Tant que ce champ est vide, le formulaire ne vous envoie rien.</p></div></div>`
+      + group('Formulaire',
+        fText('Lien Formspree (endpoint)', 'contact.formspreeEndpoint', 'https://formspree.io/f/xxxxxxx'))
+      + group('Textes du formulaire',
+        fToggle('Afficher la section contact', 'contact.enabled') +
+        fText('Titre', 'contact.L.title') +
+        fHighlights('Mots en rose', 'contact.L.highlights') +
+        fTextarea('Texte d\'introduction', 'contact.L.description', '', 2) +
+        fText('Message de confirmation (après envoi)', 'contact.L.fields.success'))
+      + group('Où vont vos données ? (RGPD)',
+        fToggle('Afficher l\'accordéon RGPD', 'contact.dataPrivacy.enabled') +
+        fText('Titre', 'contact.dataPrivacy.L.title') +
+        fTextarea('Texte', 'contact.dataPrivacy.L.body', '', 6))
+    },
+    { id: 'avis', label: 'Avis clients', icon: 'starFilled', render: () =>
+      group('Témoignages',
+        fToggle('Afficher la section', 'testimonials.enabled') +
+        fText('Sur-titre', 'testimonials.L.eyebrow') +
+        fText('Titre', 'testimonials.L.title') +
+        fHighlights('Mots en rose', 'testimonials.L.highlights') +
+        objectList('Avis (les 5 premiers s\'affichent)', 'testimonials.items',
+          [ { type: 'number', key: 'stars', label: 'Étoiles (1-5)' },
+            { type: 'textarea', key: 'text', label: 'Texte de l\'avis', lang: true, rows: 3 },
+            { type: 'text', key: 'author', label: 'Nom de la personne', lang: true },
+            { type: 'text', key: 'dog', label: 'Chien (ex : avec Iko, 3 ans)', lang: true } ],
+          { id: 't-' + Date.now(), stars: 5, fr: { text: '', author: '', dog: '' }, en: { text: '', author: '', dog: '' } }, null))
+    },
+    { id: 'reseaux', label: 'Réseaux sociaux', icon: 'instagram', render: () =>
+      group('Liens réseaux (laisser vide = icône masquée)',
+        fToggle('Afficher la section', 'social.enabled') +
+        fText('Titre', 'social.L.title') +
+        fHighlights('Mots en rose', 'social.L.highlights') +
+        fText('Instagram', 'social.instagramUrl') +
+        fText('Facebook', 'social.facebookUrl') +
+        fText('TikTok', 'social.tiktokUrl'))
+    },
+    { id: 'partenaire', label: 'Partenaire', icon: 'tag', render: () =>
+      group('Carte partenaire',
+        fToggle('Afficher le partenaire', 'partner.enabled') +
+        fText('Sur-titre', 'partner.L.eyebrow') +
+        fText('Nom du partenaire', 'partner.L.name') +
+        fTextarea('Texte', 'partner.L.text', '', 2) +
+        fText('Code promo', 'partner.code') +
+        fText('Lien du partenaire', 'partner.url') +
+        fText('Texte du bouton', 'partner.L.cta'))
+    },
+    { id: 'services', label: 'Page Services', icon: 'paw', render: () =>
+      group('Page Services',
+        fToggle('Activer la page', 'servicesPage.enabled') +
+        fText('Sur-titre', 'servicesPage.L.eyebrow') +
+        fText('Titre', 'servicesPage.L.title') +
+        fHighlights('Mots en rose', 'servicesPage.L.highlights') +
+        fTextarea('Introduction', 'servicesPage.L.intro', '', 2) +
+        fText('Texte du bouton d\'appel', 'servicesPage.L.ctaLabel') +
+        objectList('Prestations', 'servicesPage.L.items',
+          [ { type: 'text', key: 'name', label: 'Nom de la prestation' },
+            { type: 'text', key: 'duration', label: 'Durée / lieu' },
+            { type: 'textarea', key: 'note', label: 'Note (encadré rose)', rows: 2 },
+            { type: 'textarea', key: 'text', label: 'Description', rows: 6 },
+            { type: 'text', key: 'includesTitle', label: 'Titre de la liste "ce que comprend"' },
+            { type: 'stringlist', key: 'includes', label: 'Ce que comprend' } ],
+          { name: 'Nouvelle prestation', duration: '', note: '', text: '', includesTitle: '', includes: [] }, 'name'))
+    },
+    { id: 'tarifs', label: 'Page Tarifs', icon: 'tag', render: () =>
+      group('Page Tarifs',
+        fToggle('Activer la page', 'tarifsPage.enabled') +
+        fText('Sur-titre', 'tarifsPage.L.eyebrow') +
+        fText('Titre', 'tarifsPage.L.title') +
+        fHighlights('Mots en rose', 'tarifsPage.L.highlights') +
+        fTextarea('Bandeau paiement', 'tarifsPage.L.paymentInfo', '', 2) +
+        objectList('Grille tarifaire', 'tarifsPage.L.grid',
+          [ { type: 'text', key: 'name', label: 'Prestation' },
+            { type: 'text', key: 'price', label: 'Prix (ex : 80 € ou Sur devis)' },
+            { type: 'text', key: 'note', label: 'Note (optionnel)' } ],
+          { name: 'Nouvelle ligne', price: '', note: '' }, 'name') +
+        fTextarea('Texte forfaits', 'tarifsPage.L.forfaits', '', 2) +
+        fHighlights('Mots en rose (forfaits)', 'tarifsPage.L.forfaitsHighlights'))
+      + group('FAQ tarifs',
+        fText('Titre de la FAQ', 'tarifsPage.L.faqTitle') +
+        fHighlights('Mots en rose (titre FAQ)', 'tarifsPage.L.faqHighlights') +
+        objectList('Questions / réponses', 'tarifsPage.L.faq',
+          [ { type: 'text', key: 'q', label: 'Question' },
+            { type: 'textarea', key: 'a', label: 'Réponse', rows: 4 },
+            { type: 'highlights', key: 'aHighlights', label: 'Mots en rose (réponse)' } ],
+          { q: 'Nouvelle question', a: '', aHighlights: [] }, 'q'))
+    },
+    { id: 'legal', label: 'Pages légales', icon: 'edit', render: () =>
+      group('Mentions légales',
+        fText('Éditeur', 'legal.L.mentions.editor') +
+        fText('Directrice de publication', 'legal.L.mentions.director') +
+        fText('Hébergeur', 'legal.L.mentions.host') +
+        fText('Contact', 'legal.L.mentions.contact'))
+      + group('CGV',
+        fTextarea('Paiement', 'legal.L.cgv.payment', '', 3) +
+        fTextarea('Annulation', 'legal.L.cgv.cancellation', '', 5) +
+        fTextarea('Remboursement', 'legal.L.cgv.refund', '', 5))
+      + group('Confidentialité',
+        fTextarea('Texte', 'legal.L.confidentialite.body', '', 8))
+    },
+    { id: 'pied', label: 'Pied de page', icon: 'layout', render: () =>
+      group('Pied de page',
+        fText('Phrase de description', 'footer.L.tagline') +
+        fText('Titre section légale', 'footer.L.legalTitle'))
+    },
+    { id: 'apparence', label: 'Couleurs & polices', icon: 'palette', render: () => {
+      const colors = [ ['espresso', 'Fond sombre (espresso)'], ['cream', 'Fond clair (crème)'], ['hazelnut', 'Beige (hazelnut)'], ['rose', 'Accent (rose)'], ['roseDeep', 'Rose foncé'], ['jetBlack', 'Noir'] ];
+      const colorInputs = colors.map(([k, l]) => {
+        const v = getPath(G.data, `theme.colors.${k}`) || '#000000';
+        return `<div class="field-color"><input type="color" data-path="theme.colors.${k}" value="${esc(v)}"><span>${esc(l)}</span><code>${esc(v)}</code></div>`;
+      }).join('');
+      return group('Couleurs', `<div class="color-grid">${colorInputs}</div>`, 'Attention : modifier les couleurs change tout le site. À utiliser avec précaution.')
+        + group('Polices',
+          fText('Police logo / grands titres', 'theme.fonts.logo') +
+          fText('Police titres', 'theme.fonts.display') +
+          fText('Police corps de texte', 'theme.fonts.body'));
+    }}
+  ];
 
-  // ============ SECTIONS ============
-  function renderMeta() {
-    const L = state.currentLang;
-    return `
-      ${sectionHeader('Réglages généraux', 'Nom du site, descriptions SEO')}
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('settings')} Identité</h2>
-        ${textField('Nom du site (visible partout)', 'meta.siteName', { help: 'En majuscules pour respecter la charte Climate Crisis' })}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('globe')} SEO ${L.toUpperCase()}</h2>
-        ${textField('Titre onglet navigateur', `meta.${L}.pageTitle`)}
-        ${textareaField('Description (Google)', `meta.${L}.description`, { rows: 2 })}
-      </div>
-    `;
+  /* ---------- rendu ---------- */
+  function renderSidebar() {
+    $('#sideNav').innerHTML = SECTIONS.map(s =>
+      `<button class="side-item ${s.id === G.section ? 'active' : ''}" data-section="${s.id}">${window.icon(s.icon, 16)}<span>${esc(s.label)}</span></button>`
+    ).join('');
   }
-
-  function renderTheme() {
-    return `
-      ${sectionHeader('Couleurs & polices', 'Identité visuelle', false)}
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('palette')} Palette Pantone</h2>
-        <p class="panel-desc">Cliquez pour modifier. Les mots impactants utilisent le rose.</p>
-        <div class="field-row">
-          ${colorField('Jet Black', 'jetBlack')}
-          ${colorField('Espresso', 'espresso')}
-        </div>
-        <div class="field-row">
-          ${colorField('Espresso profond', 'espressoDeep')}
-          ${colorField('Espresso doux', 'espressoSoft')}
-        </div>
-        <div class="field-row">
-          ${colorField('Hazelnut', 'hazelnut')}
-          ${colorField('Hazelnut doux', 'hazelnutSoft')}
-        </div>
-        <div class="field-row">
-          ${colorField('Crème (fond principal)', 'cream')}
-          ${colorField('🌸 Rose (mots impactants)', 'rose')}
-        </div>
-        <div class="field">
-          ${colorField('🌸 Rose profond (hovers)', 'roseDeep')}
-        </div>
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('settings')} Options</h2>
-        ${toggleField('Activer les animations au scroll', 'theme.options.enableAnimations')}
-      </div>
-    `;
+  function renderSection() {
+    const s = SECTIONS.find(x => x.id === G.section);
+    $('#editor').innerHTML = s ? s.render() : '';
+    $('#editor').scrollTop = 0;
   }
+  function renderAll() { renderSidebar(); renderSection(); $('#langLabel').textContent = G.lang.toUpperCase(); }
 
-  function renderHero() {
-    const L = state.currentLang;
-    return `
-      ${sectionHeader('Accueil (Hero)', 'Bannière principale photo + titre')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'hero.enabled')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('image')} Image de fond</h2>
-        ${imageField('Photo en fond', 'hero.backgroundImage')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Titre principal ${L.toUpperCase()}</h2>
-        ${textField('Titre (visible en grand)', `hero.${L}.title`, { help: 'Court et percutant. Une phrase de 5-8 mots max.' })}
-        ${highlightsField('Mots à mettre en rose dans le titre', `hero.${L}.highlights`)}
-        ${textareaField('Sous-titre', `hero.${L}.subtitle`, { rows: 2 })}
-      </div>
-    `;
-  }
+  /* ---------- événements ---------- */
+  function bindEditorEvents() {
+    const editor = $('#editorWrap');
 
-  function renderPresentation() {
-    const L = state.currentLang;
-    const blocks = getByPath(state.data, `presentation.${L}.blocks`) || [];
-    return `
-      ${sectionHeader('Présentation (quinconce)', 'Blocs de texte alternés gauche/droite')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'presentation.enabled')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Blocs ${L.toUpperCase()}</h2>
-        <p class="panel-desc">Chaque bloc apparaît alterné. Les mots dans "highlights" passent en rose automatiquement.</p>
-        <div class="items-list">
-          ${blocks.map((b, i) => `
-            <div class="item-card">
-              <div class="item-header has-content">
-                <div class="item-info">
-                  <div class="title">Bloc ${i + 1} — aligné ${b.align === 'right' ? 'à droite' : 'à gauche'}</div>
-                </div>
-                <div class="item-actions">
-                  <button data-remove="presentation.${L}.blocks.${i}" class="danger">${window.icon('trash')}</button>
-                </div>
-              </div>
-              <div class="item-body">
-                <div class="field">
-                  <label>Alignement</label>
-                  <select data-bind="presentation.${L}.blocks.${i}.align">
-                    <option value="left" ${b.align === 'left' ? 'selected' : ''}>Gauche</option>
-                    <option value="right" ${b.align === 'right' ? 'selected' : ''}>Droite</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label>Texte du bloc</label>
-                  <textarea data-bind="presentation.${L}.blocks.${i}.text" rows="4">${esc(b.text)}</textarea>
-                </div>
-                ${highlightsField('Mots impactants à mettre en rose', `presentation.${L}.blocks.${i}.highlights`)}
-              </div>
-            </div>
-          `).join('')}
-        </div>
-        <button class="btn btn-secondary btn-sm" data-add="presentation.${L}.blocks" data-template="presBlock" style="margin-top:1rem">${window.icon('plus', 14)} Ajouter un bloc</button>
-      </div>
-    `;
-  }
-
-  function renderNotWhat() {
-    const L = state.currentLang;
-    const items = getByPath(state.data, `notWhat.${L}.items`) || [];
-    return `
-      ${sectionHeader('Ce que Divine Dogs n\'est pas', 'Section accordéon en bandeau noir')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'notWhat.enabled')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Contenu ${L.toUpperCase()}</h2>
-        ${textField('Titre (cliquable)', `notWhat.${L}.title`)}
-        <div class="field">
-          <label>Points (1 par ligne)</label>
-          <div class="items-list">
-            ${items.map((it, i) => `
-              <div class="item-card">
-                <div class="item-header">
-                  <span class="item-drag">${window.icon('drag', 16)}</span>
-                  <div style="flex:1">
-                    <input type="text" data-bind="notWhat.${L}.items.${i}" value="${esc(it)}" style="border:none;background:transparent;width:100%;padding:.4rem 0;font-weight:500">
-                  </div>
-                  <div class="item-actions">
-                    <button data-remove="notWhat.${L}.items.${i}" class="danger">${window.icon('trash')}</button>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <button class="btn btn-secondary btn-sm" data-add="notWhat.${L}.items" data-template="string" style="margin-top:.75rem">${window.icon('plus', 14)} Ajouter</button>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderServices() {
-    const L = state.currentLang;
-    return `
-      ${sectionHeader('Services', 'Section "en cours d\'affichage" pour le moment')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'services.enabled')}
-        ${toggleField('Mode "à venir" (texte simple)', 'services.comingSoon')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Textes ${L.toUpperCase()}</h2>
-        ${textField('Eyebrow (petit texte)', `services.${L}.eyebrow`)}
-        ${textField('Titre principal', `services.${L}.title`)}
-        ${textareaField('Description', `services.${L}.description`, { rows: 3 })}
-      </div>
-    `;
-  }
-
-  function renderContact() {
-    const L = state.currentLang;
-    return `
-      ${sectionHeader('Formulaire de contact', 'Textes et configuration')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'contact.enabled')}
-        ${textField('Endpoint Formspree (pour recevoir les emails)', 'contact.formspreeEndpoint', { placeholder: 'https://formspree.io/f/xxxx', help: 'Créez un compte gratuit sur formspree.io, créez un nouveau formulaire, et collez ici l\'URL fournie.' })}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Textes ${L.toUpperCase()}</h2>
-        ${textField('Titre', `contact.${L}.title`)}
-        ${highlightsField('Mots à mettre en rose', `contact.${L}.highlights`)}
-        ${textareaField('Description', `contact.${L}.description`, { rows: 2 })}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('settings')} Libellés du formulaire ${L.toUpperCase()}</h2>
-        <div class="field-row">
-          ${textField('Prénom', `contact.${L}.fields.firstName`)}
-          ${textField('Nom', `contact.${L}.fields.lastName`)}
-        </div>
-        <div class="field-row">
-          ${textField('Email', `contact.${L}.fields.email`)}
-          ${textField('Téléphone', `contact.${L}.fields.phone`)}
-        </div>
-        ${textField('Note "email et/ou téléphone"', `contact.${L}.fields.contactNote`)}
-        ${textField('Titre section "Votre chien"', `contact.${L}.fields.dogSection`)}
-        <div class="field-row-3">
-          ${textField('Prénom chien', `contact.${L}.fields.dogName`)}
-          ${textField('Âge', `contact.${L}.fields.dogAge`)}
-          ${textField('Race', `contact.${L}.fields.dogBreed`)}
-        </div>
-        ${textField('Label "votre besoin"', `contact.${L}.fields.message`)}
-        ${textField('Bouton envoyer', `contact.${L}.fields.submit`)}
-        ${textareaField('Message de succès', `contact.${L}.fields.success`, { rows: 2 })}
-      </div>
-    `;
-  }
-
-  function renderTestimonials() {
-    const L = state.currentLang;
-    const items = state.data.testimonials.items || [];
-    return `
-      ${sectionHeader('Avis clients', 'Maximum 5 témoignages affichés')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'testimonials.enabled')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} En-tête ${L.toUpperCase()}</h2>
-        ${textField('Eyebrow', `testimonials.${L}.eyebrow`)}
-        ${textField('Titre', `testimonials.${L}.title`)}
-        ${highlightsField('Mots à mettre en rose', `testimonials.${L}.highlights`)}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('starFilled')} Témoignages</h2>
-        <div class="items-list">
-          ${items.map((t, i) => {
-            const tx = t[L] || {};
-            return `
-              <div class="item-card">
-                <div class="item-header has-content">
-                  <div class="item-info">
-                    <div class="title">${esc(tx.author || 'Nouveau')}</div>
-                    <div class="preview">${esc((tx.text || '').substring(0, 60))}…</div>
-                  </div>
-                  <div class="item-actions">
-                    <button data-remove="testimonials.items.${i}" class="danger">${window.icon('trash')}</button>
-                  </div>
-                </div>
-                <div class="item-body">
-                  <div class="field"><label>Texte du témoignage ${L.toUpperCase()}</label><textarea data-bind="testimonials.items.${i}.${L}.text" rows="3">${esc(tx.text)}</textarea></div>
-                  <div class="field-row-3">
-                    <div class="field"><label>Auteur</label><input type="text" data-bind="testimonials.items.${i}.${L}.author" value="${esc(tx.author)}"></div>
-                    <div class="field"><label>Contexte (chien)</label><input type="text" data-bind="testimonials.items.${i}.${L}.dog" value="${esc(tx.dog)}"></div>
-                    <div class="field"><label>Étoiles</label><select data-bind-num="testimonials.items.${i}.stars">
-                      ${[1,2,3,4,5].map(n => `<option value="${n}" ${t.stars===n?'selected':''}>${n}</option>`).join('')}
-                    </select></div>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-        <button class="btn btn-secondary btn-sm" data-add="testimonials.items" data-template="testimonial" style="margin-top:1rem">${window.icon('plus', 14)} Ajouter un témoignage</button>
-      </div>
-    `;
-  }
-
-  function renderSocial() {
-    const L = state.currentLang;
-    return `
-      ${sectionHeader('Réseaux sociaux', 'Section finale + footer')}
-      <div class="panel">
-        ${toggleField('Afficher la section', 'social.enabled')}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('type')} Phrase d'appel ${L.toUpperCase()}</h2>
-        ${textareaField('Titre', `social.${L}.title`, { rows: 2 })}
-        ${highlightsField('Mots à mettre en rose', `social.${L}.highlights`)}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('link')} Liens réseaux</h2>
-        ${textField('URL Instagram', 'social.instagramUrl', { type: 'url' })}
-        ${textField('URL Facebook', 'social.facebookUrl', { type: 'url', help: 'Laisser vide si pas encore créée' })}
-        ${textField('URL TikTok', 'social.tiktokUrl', { type: 'url' })}
-      </div>
-    `;
-  }
-
-  function renderFooter() {
-    const L = state.currentLang;
-    const links = getByPath(state.data, `footer.${L}.legalLinks`) || [];
-    return `
-      ${sectionHeader('Footer', 'Bas de page et liens légaux')}
-      <div class="panel">
-        ${textField('Année copyright', 'footer.year')}
-        ${textField('Tagline ' + L.toUpperCase(), `footer.${L}.tagline`)}
-        ${textField('Titre section légal', `footer.${L}.legalTitle`)}
-      </div>
-      <div class="panel">
-        <h2 class="panel-title">${window.icon('link')} Liens légaux ${L.toUpperCase()}</h2>
-        <div class="items-list">
-          ${links.map((lk, i) => `
-            <div class="item-card">
-              <div class="item-header has-content">
-                <div class="item-info"><div class="title">${esc(lk.label)}</div></div>
-                <div class="item-actions">
-                  <button data-remove="footer.${L}.legalLinks.${i}" class="danger">${window.icon('trash')}</button>
-                </div>
-              </div>
-              <div class="item-body">
-                <div class="field-row">
-                  <div class="field"><label>Texte affiché</label><input type="text" data-bind="footer.${L}.legalLinks.${i}.label" value="${esc(lk.label)}"></div>
-                  <div class="field"><label>URL</label><input type="text" data-bind="footer.${L}.legalLinks.${i}.url" value="${esc(lk.url)}"></div>
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-        <button class="btn btn-secondary btn-sm" data-add="footer.${L}.legalLinks" data-template="legalLink" style="margin-top:1rem">${window.icon('plus', 14)} Ajouter</button>
-      </div>
-    `;
-  }
-
-  // ============ DATA BINDINGS ============
-  function getByPath(obj, path) {
-    return path.split('.').reduce((o, k) => {
-      if (o == null) return undefined;
-      return /^\d+$/.test(k) ? o[parseInt(k, 10)] : o[k];
-    }, obj);
-  }
-
-  function setByPath(obj, path, value) {
-    const keys = path.split('.');
-    const last = keys.pop();
-    let target = obj;
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i];
-      const idx = /^\d+$/.test(k) ? parseInt(k, 10) : k;
-      if (target[idx] == null) {
-        const nextIsNum = /^\d+$/.test(keys[i+1] || last);
-        target[idx] = nextIsNum ? [] : {};
-      }
-      target = target[idx];
-    }
-    const lastKey = /^\d+$/.test(last) ? parseInt(last, 10) : last;
-    target[lastKey] = value;
-  }
-
-  function attachFieldListeners() {
-    $$('[data-bind]').forEach(el => {
-      const handler = (e) => { setByPath(state.data, el.dataset.bind, e.target.value); markDirty(); };
-      el.addEventListener('input', handler);
-      el.addEventListener('change', handler);
-    });
-    $$('[data-bind-bool]').forEach(el => {
-      el.addEventListener('change', (e) => { setByPath(state.data, el.dataset.bindBool, e.target.checked); markDirty(); });
-    });
-    $$('[data-bind-num]').forEach(el => {
-      el.addEventListener('change', (e) => { setByPath(state.data, el.dataset.bindNum, parseInt(e.target.value, 10)); markDirty(); });
-    });
-    $$('[data-color]').forEach(el => {
-      el.addEventListener('input', (e) => {
-        const key = el.dataset.color;
-        state.data.theme.colors[key] = e.target.value;
-        const card = el.closest('.color-field');
-        if (card) {
-          card.querySelector('.swatch').style.background = e.target.value;
-          card.querySelector('.value').textContent = e.target.value;
-        }
-        markDirty();
-      });
-    });
-    $$('[data-add]').forEach(btn => {
-      btn.addEventListener('click', () => addItem(btn.dataset.add, btn.dataset.template));
-    });
-    $$('[data-remove]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const ok = await modal({ title: 'Supprimer ?', message: 'Cet élément sera supprimé.', confirmLabel: 'Supprimer', danger: true });
-        if (ok) removeItem(btn.dataset.remove);
-      });
-    });
-    $$('[data-upload]').forEach(input => {
-      input.addEventListener('change', (e) => handleUpload(e.target, input.dataset.upload));
-    });
-    // Highlights chips
-    $$('[data-add-chip]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const path = btn.dataset.addChip;
-        const input = $(`[data-chip-input="${path}"]`);
-        if (input && input.value.trim()) {
-          const arr = getByPath(state.data, path) || [];
-          arr.push(input.value.trim());
-          setByPath(state.data, path, arr);
-          input.value = '';
-          markDirty();
-          renderSection(state.currentSection);
-        }
-      });
-    });
-    $$('[data-chip-input]').forEach(input => {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const path = input.dataset.chipInput;
-          $(`[data-add-chip="${path}"]`)?.click();
-        }
-      });
-    });
-    $$('[data-remove-chip]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const path = btn.dataset.removeChip;
-        const keys = path.split('.');
-        const idx = parseInt(keys.pop(), 10);
-        const arr = getByPath(state.data, keys.join('.'));
-        arr.splice(idx, 1);
-        markDirty();
-        renderSection(state.currentSection);
-      });
-    });
-  }
-
-  function addItem(path, template) {
-    const arr = getByPath(state.data, path) || [];
-    let newItem;
-    if (template === 'string') newItem = '';
-    else if (template === 'presBlock') newItem = { id: 'block-' + Date.now(), align: 'left', text: '', highlights: [] };
-    else if (template === 'testimonial') newItem = { id: 't-' + Date.now(), stars: 5, fr: { text: '', author: '', dog: '' }, en: { text: '', author: '', dog: '' } };
-    else if (template === 'legalLink') newItem = { label: 'Nouveau lien', url: '#' };
-    else newItem = {};
-    arr.push(newItem);
-    setByPath(state.data, path, arr);
-    markDirty();
-    renderSection(state.currentSection);
-  }
-
-  function removeItem(path) {
-    const keys = path.split('.');
-    const idx = parseInt(keys.pop(), 10);
-    const arr = getByPath(state.data, keys.join('.'));
-    arr.splice(idx, 1);
-    markDirty();
-    renderSection(state.currentSection);
-  }
-
-  // ============ UPLOAD ============
-  async function handleUpload(input, targetPath) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast('Image > 5 Mo. Compressez avant.', 'error', 5000); return;
-    }
-    toast('Upload en cours…', 'info');
-    try {
-      const compressed = await compressImage(file);
-      const path = await window.DD_GH.uploadImage(compressed, file.name);
-      setByPath(state.data, targetPath, path);
-      toast('Image uploadée', 'success');
+    editor.addEventListener('input', (e) => {
+      const el = e.target;
+      if (!el.dataset.path) return;
+      let val = el.type === 'checkbox' ? el.checked : el.value;
+      if (el.dataset.type === 'csv') val = el.value.split(',').map(x => x.trim()).filter(Boolean);
+      if (el.dataset.type === 'num') val = parseInt(el.value, 10) || 0;
+      if (el.dataset.type === 'bool') val = el.checked;
+      setPath(G.data, el.dataset.path, val);
       markDirty();
-      renderSection(state.currentSection);
-    } catch (err) {
-      toast('Erreur upload : ' + err.message, 'error', 5000);
-    }
+      // maj live du code couleur affiché
+      if (el.type === 'color') { const code = el.parentElement.querySelector('code'); if (code) code.textContent = el.value; }
+    });
+
+    editor.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-act]');
+      if (btn) { handleListAction(btn); return; }
+      const up = e.target.closest('[data-upload]');
+      if (up) { triggerUpload(up.dataset.upload); return; }
+    });
+
+    // navigation sections
+    $('#sideNav').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-section]');
+      if (!b) return;
+      G.section = b.dataset.section; renderAll();
+    });
   }
 
+  function handleListAction(btn) {
+    const listPath = btn.dataset.list;
+    const arr = getPath(G.data, listPath) || [];
+    const i = parseInt(btn.dataset.i, 10);
+    const act = btn.dataset.act;
+    if (act === 'add-str') arr.push('');
+    else if (act === 'add-obj') { const tpl = JSON.parse(btn.dataset.tpl); arr.push(JSON.parse(JSON.stringify(tpl))); }
+    else if (act === 'del') arr.splice(i, 1);
+    else if (act === 'up' && i > 0) { [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]]; }
+    else if (act === 'down' && i < arr.length - 1) { [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; }
+    setPath(G.data, listPath, arr);
+    markDirty();
+    renderSection();
+  }
+
+  function triggerUpload(path) {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+      toast('Compression et upload en cours…', 'info');
+      try {
+        const { base64, filename } = await compressImage(file);
+        const repoPath = await GH.uploadImage(filename, base64);
+        setPath(G.data, path, repoPath);
+        markDirty();
+        renderSection();
+        toast('Image téléversée. Pensez à publier.', 'ok');
+      } catch (err) { toast('Erreur upload : ' + err.message, 'err'); }
+    };
+    input.click();
+  }
+
+  // Compression côté client (max 2000px, jpeg 82%)
   function compressImage(file) {
     return new Promise((resolve, reject) => {
+      const img = new Image();
       const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX = 2400;
-          let { width, height } = img;
-          if (width > MAX) { height = height * (MAX / width); width = MAX; }
-          canvas.width = width; canvas.height = height;
-          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-          canvas.toBlob(blob => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', 0.85);
-        };
-        img.src = reader.result;
-      };
+      reader.onload = () => { img.src = reader.result; };
       reader.onerror = reject;
+      img.onload = () => {
+        const max = 2000;
+        let { width, height } = img;
+        if (width > max || height > max) { const r = Math.min(max / width, max / height); width = Math.round(width * r); height = Math.round(height * r); }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        const base64 = dataUrl.split(',')[1];
+        const name = 'img-' + Date.now() + '.jpg';
+        resolve({ base64, filename: name });
+      };
+      img.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  // ============ PUBLISH ============
-  async function publishChanges() {
-    if (!state.dirty || state.saving) return;
-    state.saving = true;
-    updateSaveStatus();
-    toast('Publication…', 'info');
+  async function save() {
+    if (!G.dirty) { toast('Aucune modification à publier.', 'info'); return; }
+    const btn = $('#saveBtn'); btn.disabled = true; btn.classList.add('loading');
     try {
-      state.data.lastUpdated = new Date().toISOString();
-      const newSha = await window.DD_GH.saveData(state.data, state.sha);
-      state.sha = newSha;
-      state.dirty = false;
-      state.saving = false;
-      updateSaveStatus();
-      toast('Publié ! Visible dans ~1 minute.', 'success', 5000);
-    } catch (err) {
-      state.saving = false;
-      updateSaveStatus();
-      $('#save-status')?.classList.add('error');
-      toast('Erreur : ' + err.message, 'error', 6000);
-    }
+      G.data.lastUpdated = new Date().toISOString();
+      const newSha = await GH.saveData(G.data, G.sha, 'MàJ contenu via admin');
+      G.sha = newSha; G.dirty = false;
+      btn.classList.remove('pulse');
+      toast('Publié ! Le site se met à jour dans ~1 minute.', 'ok');
+    } catch (err) { toast('Erreur : ' + err.message, 'err'); }
+    finally { btn.disabled = false; btn.classList.remove('loading'); }
   }
 
-  // ============ INIT ============
-  async function initAdmin() {
+  /* ---------- login ---------- */
+  async function tryLogin(token, remember) {
+    GH.setToken(token, remember);
+    const btn = $('#loginBtn'); btn.disabled = true; btn.textContent = 'Connexion…';
     try {
-      const result = await window.DD_GH.loadData();
-      state.data = result.data;
-      state.sha = result.sha;
-      state.currentLang = result.data.defaultLang || 'fr';
-      renderShell();
-      switchSection('meta');
+      await GH.verify();
+      const { data, sha } = await GH.loadData();
+      G.data = data; G.sha = sha; G.lang = data.defaultLang || 'fr';
+      $('#login').classList.add('hidden');
+      $('#app').classList.remove('hidden');
+      bindEditorEvents();
+      renderAll();
+      toast('Connectée. Bienvenue !', 'ok');
     } catch (err) {
-      toast('Erreur : ' + err.message, 'error', 6000);
-      setTimeout(() => { window.DD_GH.clearSession(); location.reload(); }, 3000);
-    }
+      GH.clearToken();
+      $('#loginError').textContent = err.message;
+      $('#loginError').classList.add('show');
+    } finally { btn.disabled = false; btn.textContent = 'Se connecter'; }
   }
 
-  function boot() {
-    const session = window.DD_GH.getSession();
-    if (session?.token) initAdmin();
-    else renderLogin();
+  function initLogin() {
+    $('#loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const token = $('#tokenInput').value.trim();
+      if (!token) return;
+      tryLogin(token, $('#rememberInput').checked);
+    });
+    // auto-login si token mémorisé
+    const saved = GH.getToken();
+    if (saved) { $('#tokenInput').value = saved; tryLogin(saved, true); }
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  function initApp() {
+    $('#saveBtn').addEventListener('click', save);
+    $('#langBtn').addEventListener('click', () => { G.lang = G.lang === 'fr' ? 'en' : 'fr'; renderAll(); });
+    $('#logoutBtn').addEventListener('click', () => {
+      if (G.dirty && !confirm('Des modifications ne sont pas publiées. Se déconnecter quand même ?')) return;
+      GH.clearToken(); location.reload();
+    });
+    window.addEventListener('beforeunload', (e) => { if (G.dirty) { e.preventDefault(); e.returnValue = ''; } });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { initLogin(); initApp(); });
 })();

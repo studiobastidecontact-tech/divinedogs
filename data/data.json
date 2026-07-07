@@ -1,16 +1,16 @@
 {
-  "version": "3.0.0",
-  "lastUpdated": "2026-06-03T00:00:00Z",
+  "version": "3.1.0",
+  "lastUpdated": "2026-07-06T00:00:00Z",
   "defaultLang": "fr",
   "meta": {
     "siteName": "DIVINE DOGS",
     "fr": {
-      "pageTitle": "DIVINE DOGS — Éducation canine comportementaliste",
-      "description": "Divine Dogs, l'éducation canine bienveillante par Elisa-Lou Jaudor. Comportementaliste formée chez Esprit Dog. Accompagnement sur mesure pour vous et votre chien."
+      "pageTitle": "Divine Dogs — Éducatrice canine comportementaliste à Toulouse",
+      "description": "Éducation canine et accompagnement comportemental personnalisé à domicile. Formée Esprit Dog. Toulouse, Bordeaux, Charente. Faites le premier pas."
     },
     "en": {
-      "pageTitle": "DIVINE DOGS — Canine education & behaviour",
-      "description": "Divine Dogs, kind dog education by Elisa-Lou Jaudor. Behaviourist trained at Esprit Dog. Tailored support for you and your dog."
+      "pageTitle": "Divine Dogs — Canine behaviourist educator near Toulouse",
+      "description": "Personalised dog education and behaviour support at home. Esprit Dog trained. Toulouse, Bordeaux, Charente. Take the first step."
     }
   },
   "theme": {
@@ -32,38 +32,86 @@
       "display": "Zalando Sans SemiExpanded"
     },
     "options": {
-      "enableAnimations": true,
-      "showGrainOverlay": false
+      "enableAnimations": true
+    }
+  },
+  "announce": {
+    "enabled": true,
+    "fr": {
+      "text": "Vous êtes en dehors de la France ? Contactez-nous pour réserver un accompagnement."
+    },
+    "en": {
+      "text": "Outside France? Get in touch to book a session."
     }
   },
   "nav": {
     "fr": {
       "links": [
-        { "id": "services", "label": "Services", "anchor": "#services" },
-        { "id": "avis", "label": "Avis", "anchor": "#avis" },
-        { "id": "contact", "label": "Prendre contact", "anchor": "#contact", "cta": true }
+        {
+          "id": "services",
+          "label": "Services",
+          "anchor": "services.html"
+        },
+        {
+          "id": "tarifs",
+          "label": "Tarifs",
+          "anchor": "tarifs.html"
+        },
+        {
+          "id": "avis",
+          "label": "Avis",
+          "anchor": "index.html#avis"
+        },
+        {
+          "id": "contact",
+          "label": "Prendre contact",
+          "anchor": "index.html#contact",
+          "cta": true
+        }
       ]
     },
     "en": {
       "links": [
-        { "id": "services", "label": "Services", "anchor": "#services" },
-        { "id": "avis", "label": "Reviews", "anchor": "#avis" },
-        { "id": "contact", "label": "Get in touch", "anchor": "#contact", "cta": true }
+        {
+          "id": "services",
+          "label": "Services",
+          "anchor": "services.html"
+        },
+        {
+          "id": "tarifs",
+          "label": "Pricing",
+          "anchor": "tarifs.html"
+        },
+        {
+          "id": "avis",
+          "label": "Reviews",
+          "anchor": "index.html#avis"
+        },
+        {
+          "id": "contact",
+          "label": "Get in touch",
+          "anchor": "index.html#contact",
+          "cta": true
+        }
       ]
     }
   },
   "hero": {
     "enabled": true,
-    "backgroundImage": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=2400&q=80",
+    "backgroundImage": "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=2400&q=80",
     "fr": {
-      "title": "Le lien avant la méthode.",
-      "highlights": ["lien"],
-      "subtitle": "Éducation et rééducation canine bienveillante, partout en France."
+      "title": "Parce que l'éducation commence avec vous",
+      "highlights": [
+        "vous"
+      ],
+      "subtitle": "Rejoignez la communauté de ceux qui aiment leur chien."
     },
     "en": {
-      "title": "The bond before the method.",
-      "highlights": ["bond"],
-      "subtitle": "Kind dog education and behaviour rehabilitation, all over France."
+      "title": "Because education begins with you",
+      "highlights": [
+        "you"
+      ],
+      "subtitle": "Join the community of those who love their dog."
     }
   },
   "presentation": {
@@ -74,25 +122,42 @@
           "id": "block-intro",
           "align": "left",
           "text": "Dans un monde où l'éducation canine se veut vieillissante, dictée par des professionnels qui adoptent parfois des méthodes graves et dangereuses, Divine Dogs est là pour pallier à ce problème.",
-          "highlights": ["graves et dangereuses", "Divine Dogs"]
+          "highlights": [
+            "graves et dangereuses",
+            "Divine Dogs"
+          ]
         },
         {
           "id": "block-elisalou",
           "align": "right",
-          "text": "Je m'appelle Elisa-Lou Jaudor, je suis éducatrice canine comportementaliste et j'ai créé pour vous DIVINE DOGS. Mon parcours professionnel entouré de personnes compétentes telles qu'ESPRIT DOG pour la partie théorique de mon apprentissage, couplé à ma personnalité, mes connaissances et mon expérience personnelle avec les chiens, vous permettront de bénéficier d'un accompagnement sur mesure et d'avoir des solutions pour chacune de vos problématiques.",
-          "highlights": ["Elisa-Lou Jaudor", "DIVINE DOGS", "ESPRIT DOG", "accompagnement sur mesure", "solutions", "problématiques"]
+          "text": "Je m'appelle Elisa-Lou Jodor, je suis éducatrice canine comportementaliste et j'ai créé pour vous DIVINE DOGS. Mon parcours professionnel entouré de personnes compétentes telles qu'ESPRIT DOG pour la partie théorique de mon apprentissage, couplé à ma personnalité, mes connaissances et mon expérience personnelle avec les chiens, vous permettront de bénéficier d'un accompagnement sur mesure et d'avoir des solutions pour chacune de vos problématiques.",
+          "highlights": [
+            "Elisa-Lou Jodor",
+            "DIVINE DOGS",
+            "ESPRIT DOG",
+            "accompagnement sur mesure",
+            "solutions",
+            "problématiques"
+          ]
         },
         {
           "id": "block-philosophie",
           "align": "left",
           "text": "Divine Dogs s'adresse à toutes les problématiques de vie, tous les chiens et surtout tous les maîtres de chien. Ici aucun chien n'est refusé, parce qu'un maître qui demande de l'aide est un maître qui se doit d'être aidé.",
-          "highlights": ["tous les chiens", "aucun chien n'est refusé"]
+          "highlights": [
+            "tous les chiens",
+            "aucun chien n'est refusé"
+          ]
         },
         {
           "id": "block-promesse",
           "align": "right",
           "text": "Réserver un accompagnement avec Divine Dogs, c'est se garantir la promesse de résultats efficaces, d'une communication claire et d'un lien retrouvé avec son chien.",
-          "highlights": ["résultats efficaces", "communication claire", "lien retrouvé"]
+          "highlights": [
+            "résultats efficaces",
+            "communication claire",
+            "lien retrouvé"
+          ]
         }
       ]
     },
@@ -102,26 +167,73 @@
           "id": "block-intro",
           "align": "left",
           "text": "In a world where dog education is becoming outdated, dictated by professionals who sometimes use harsh and dangerous methods, Divine Dogs is here to address this problem.",
-          "highlights": ["harsh and dangerous", "Divine Dogs"]
+          "highlights": [
+            "harsh and dangerous",
+            "Divine Dogs"
+          ]
         },
         {
           "id": "block-elisalou",
           "align": "right",
-          "text": "My name is Elisa-Lou Jaudor, I am a canine behaviourist educator and I created DIVINE DOGS for you. My professional path surrounded by skilled people such as ESPRIT DOG for the theoretical part of my training, combined with my personality, my knowledge and my personal experience with dogs, will allow you to benefit from tailored support and find solutions for each of your concerns.",
-          "highlights": ["Elisa-Lou Jaudor", "DIVINE DOGS", "ESPRIT DOG", "tailored support", "solutions"]
+          "text": "My name is Elisa-Lou Jodor, I am a canine behaviourist educator and I created DIVINE DOGS for you. My professional path surrounded by skilled people such as ESPRIT DOG, combined with my personality, my knowledge and my personal experience with dogs, will allow you to benefit from tailored support and find solutions for each of your concerns.",
+          "highlights": [
+            "Elisa-Lou Jodor",
+            "DIVINE DOGS",
+            "ESPRIT DOG",
+            "tailored support",
+            "solutions"
+          ]
         },
         {
           "id": "block-philosophie",
           "align": "left",
           "text": "Divine Dogs addresses all life situations, all dogs and especially all dog owners. Here no dog is refused, because an owner asking for help is an owner who deserves to be helped.",
-          "highlights": ["all dogs", "no dog is refused"]
+          "highlights": [
+            "all dogs",
+            "no dog is refused"
+          ]
         },
         {
           "id": "block-promesse",
           "align": "right",
           "text": "Booking a session with Divine Dogs means guaranteeing effective results, clear communication and a renewed bond with your dog.",
-          "highlights": ["effective results", "clear communication", "renewed bond"]
+          "highlights": [
+            "effective results",
+            "clear communication",
+            "renewed bond"
+          ]
         }
+      ]
+    }
+  },
+  "values": {
+    "enabled": true,
+    "fr": {
+      "eyebrow": "mes engagements",
+      "title": "Ce qui guide chaque accompagnement",
+      "highlights": [
+        "chaque accompagnement"
+      ],
+      "devise": "Tous les chiens sont acceptés, peu importe leur race et leur problématique.",
+      "items": [
+        "Un accompagnement personnalisé",
+        "Construire des progrès durables",
+        "Faire évoluer le maître autant que son chien",
+        "Rester disponible même après une séance"
+      ]
+    },
+    "en": {
+      "eyebrow": "my commitments",
+      "title": "What guides every session",
+      "highlights": [
+        "every session"
+      ],
+      "devise": "All dogs are welcome, whatever their breed or their challenge.",
+      "items": [
+        "Personalised support",
+        "Building lasting progress",
+        "Growing the owner as much as the dog",
+        "Staying available even after a session"
       ]
     }
   },
@@ -144,34 +256,22 @@
       ]
     }
   },
-  "services": {
-    "enabled": true,
-    "comingSoon": true,
-    "fr": {
-      "eyebrow": "les services",
-      "title": "Services en cours d'affichage",
-      "description": "Les prestations détaillées arrivent très bientôt. En attendant, n'hésitez pas à me contacter pour discuter de votre situation."
-    },
-    "en": {
-      "eyebrow": "the services",
-      "title": "Services coming soon",
-      "description": "Detailed offerings are coming very soon. In the meantime, please reach out to discuss your situation."
-    },
-    "items": []
-  },
   "contact": {
     "enabled": true,
     "formspreeEndpoint": "",
     "fr": {
       "title": "Faites le premier pas, contactez-nous",
-      "highlights": ["premier pas"],
-      "description": "Quelques informations sur vous et votre chien, et nous échangerons rapidement.",
+      "highlights": [
+        "premier pas"
+      ],
+      "description": "Quelques informations sur vous et votre chien, et je vous recontacte vite.",
       "fields": {
         "firstName": "Prénom",
         "lastName": "Nom",
         "email": "Email",
         "phone": "Téléphone",
         "contactNote": "Email et/ou téléphone — au moins l'un des deux",
+        "city": "Ville",
         "dogName": "Prénom du chien",
         "dogAge": "Âge du chien",
         "dogBreed": "Race du chien",
@@ -183,14 +283,17 @@
     },
     "en": {
       "title": "Take the first step, contact us",
-      "highlights": ["first step"],
-      "description": "A few details about you and your dog, and we'll get in touch soon.",
+      "highlights": [
+        "first step"
+      ],
+      "description": "A few details about you and your dog, and I'll get back to you soon.",
       "fields": {
         "firstName": "First name",
         "lastName": "Last name",
         "email": "Email",
         "phone": "Phone",
         "contactNote": "Email and/or phone — at least one",
+        "city": "City",
         "dogName": "Dog's name",
         "dogAge": "Dog's age",
         "dogBreed": "Dog's breed",
@@ -199,6 +302,17 @@
         "submit": "Send my request",
         "success": "Your form has been sent and will be processed shortly."
       }
+    },
+    "dataPrivacy": {
+      "enabled": true,
+      "fr": {
+        "title": "Où vont vos données ?",
+        "body": "Les données personnelles collectées (nom, prénom, adresse e-mail, numéro de téléphone et toute information communiquée via les formulaires ou lors des échanges) sont utilisées uniquement pour les finalités suivantes : répondre aux demandes de contact et de renseignements ; organiser, confirmer et assurer le suivi des rendez-vous ; établir les devis, factures et assurer la gestion administrative des prestations ; communiquer avec le client dans le cadre des prestations proposées par Divine Dogs ; respecter les obligations légales et comptables applicables. Les données collectées ne sont utilisées à aucune autre fin sans le consentement préalable du client et ne sont ni vendues ni cédées à des tiers, sauf obligation légale ou nécessité liée à l'exécution de la prestation."
+      },
+      "en": {
+        "title": "Where does your data go?",
+        "body": "The personal data collected (surname, first name, email, phone number and any information shared through the forms or during exchanges) is used only to: answer contact and information requests; organise, confirm and follow up appointments; produce quotes, invoices and handle the administrative management of services; communicate with the client within Divine Dogs' services; comply with applicable legal and accounting obligations. The data collected is not used for any other purpose without the client's prior consent and is neither sold nor shared with third parties, except where legally required or necessary to deliver the service."
+      }
     }
   },
   "testimonials": {
@@ -206,12 +320,16 @@
     "fr": {
       "eyebrow": "ils en parlent",
       "title": "Ce qu'en disent les familles",
-      "highlights": ["familles"]
+      "highlights": [
+        "familles"
+      ]
     },
     "en": {
       "eyebrow": "they talk about it",
       "title": "What families say",
-      "highlights": ["families"]
+      "highlights": [
+        "families"
+      ]
     },
     "items": [
       {
@@ -290,33 +408,307 @@
     "enabled": true,
     "fr": {
       "title": "Restez connectée avec Divine Dogs sur les réseaux sociaux",
-      "highlights": ["Divine Dogs"]
+      "highlights": [
+        "Divine Dogs"
+      ]
     },
     "en": {
       "title": "Stay connected with Divine Dogs on social media",
-      "highlights": ["Divine Dogs"]
+      "highlights": [
+        "Divine Dogs"
+      ]
     },
-    "instagramUrl": "https://instagram.com/divinedogs",
+    "instagramUrl": "https://www.instagram.com/divinedogsfr",
     "facebookUrl": "",
     "tiktokUrl": ""
+  },
+  "partner": {
+    "enabled": true,
+    "url": "https://xn--les101dads-76a.com/",
+    "logo": "",
+    "code": "DIVINEDOGS5",
+    "fr": {
+      "eyebrow": "notre partenaire",
+      "name": "Les 101 d'Adès",
+      "text": "Profitez de -5% chez notre partenaire avec le code ci-dessous.",
+      "cta": "Découvrir"
+    },
+    "en": {
+      "eyebrow": "our partner",
+      "name": "Les 101 d'Adès",
+      "text": "Enjoy -5% at our partner with the code below.",
+      "cta": "Discover"
+    }
+  },
+  "servicesPage": {
+    "enabled": true,
+    "fr": {
+      "eyebrow": "les services",
+      "title": "Un accompagnement pour chaque situation",
+      "highlights": [
+        "chaque situation"
+      ],
+      "intro": "Chaque chien est unique. Voici les différentes façons dont je peux vous accompagner, vous et votre compagnon.",
+      "ctaLabel": "Prendre contact",
+      "items": [
+        {
+          "id": "bilan",
+          "name": "Bilan comportemental",
+          "duration": "1h30 à 2h",
+          "note": "Obligatoire avant toute séance pour les chiens de plus de 6 mois.",
+          "text": "Le bilan comportemental est la première étape de l'accompagnement. Il permet de faire connaissance avec vous et votre chien afin de comprendre votre situation dans sa globalité. Lors de cette rencontre, nous prenons le temps d'échanger sur les difficultés que vous rencontrez, mais aussi sur votre quotidien. Nous abordons différents aspects tels que l'histoire de votre chien, son environnement, ses habitudes, son mode de vie, ses interactions avec les autres, son état émotionnel ainsi que vos objectifs. Cet échange me permet d'identifier les facteurs pouvant influencer le comportement de votre chien et de mieux comprendre l'origine des problématiques rencontrées. À l'issue du bilan, je vous apporte un premier regard sur la situation, réponds à vos questions et vous propose un accompagnement personnalisé, adapté aux besoins de votre chien et à votre mode de vie.",
+          "includesTitle": "Ce que comprend le bilan",
+          "includes": [
+            "Un échange approfondi sur votre chien et votre quotidien",
+            "L'analyse des problématiques rencontrées",
+            "Des premiers conseils adaptés à votre situation",
+            "Un plan d'accompagnement personnalisé si un suivi est recommandé"
+          ]
+        },
+        {
+          "id": "education",
+          "name": "Séance d'éducation canine",
+          "duration": "1h à 2h — à domicile et dans les endroits fréquentés avec le chien",
+          "note": "À partir de 6 mois.",
+          "text": "Que ce soit pour les chiens adultes comme pour les chiots, nos séances d'éducation canine sont destinées à apprendre à vivre avec son chien. Ce n'est pas du dressage classique, robotisé et lassant, du type « assis » et « couché » pendant une heure. Chaque chien a une méthode d'apprentissage qui lui correspond, nous sommes là pour trouver celle de votre chien. Les séances se déroulent chez vous ou en extérieur, mais toujours à proximité de chez vous pour se rapprocher au mieux de votre quotidien. Il n'y a pas un livre de méthodes pour tous : chaque séance est une nouvelle découverte et un nouveau mode d'apprentissage qui vous permettra d'évoluer de manière personnalisée avec votre compagnon.",
+          "includesTitle": "",
+          "includes": []
+        },
+        {
+          "id": "reeducation",
+          "name": "Rééducation / trouble du comportement",
+          "duration": "1h30 à 2h — à domicile ou dans des endroits fréquentés",
+          "note": "Il n'est jamais trop tard pour régler un trouble du comportement. Faites-nous confiance, aucun cas n'est perdu.",
+          "text": "Ces séances sont destinées aux comportements indésirables que votre chien peut avoir, qu'ils soient nouveaux ou installés depuis longtemps.",
+          "includesTitle": "Nous intervenons notamment sur",
+          "includes": [
+            "La destruction",
+            "La malpropreté",
+            "La peur",
+            "Les aboiements intempestifs",
+            "La protection de ressources",
+            "La prédation",
+            "L'agressivité congénère",
+            "L'agressivité envers les humains"
+          ]
+        },
+        {
+          "id": "chiot",
+          "name": "Éducation du chiot",
+          "duration": "1h — à domicile et dans les endroits fréquentés",
+          "note": "Accessible aux chiots de moins de 6 mois uniquement.",
+          "text": "Votre jeune protégé vient d'arriver et vous voulez faire les choses bien directement ? Ou il commence déjà à proposer les premières bêtises ou problèmes ? Nous avons une formule toute prête pour vous. Un chiot a un rythme d'évolution différent du chien adulte : les séances que nous proposons pour eux leur sont donc adaptées.",
+          "includesTitle": "",
+          "includes": []
+        },
+        {
+          "id": "accueil-chiot",
+          "name": "Accompagnement à l'accueil du chiot",
+          "duration": "1h à 2h",
+          "note": "Le tarif de cette prestation varie en fonction de l'avancée de votre projet, contactez-nous pour en savoir plus.",
+          "text": "Accueillir un chiot est une étape importante, et de nombreuses questions peuvent se poser avant même son arrivée. Cette prestation s'adresse aux futurs propriétaires, que votre chiot soit déjà réservé ou que vous soyez encore en pleine réflexion sur votre projet. Nous échangeons sur votre mode de vie, vos attentes et vos objectifs afin de vous aider à faire des choix adaptés. Je vous accompagne dans la réflexion autour de la race ou du type de chien qui pourrait vous correspondre, le choix du matériel indispensable, la préparation de la maison ainsi que l'organisation des premiers jours et des premières semaines. C'est également l'occasion d'aborder les bases essentielles : propreté, sommeil, alimentation, socialisation, apprentissages, gestion des mordillements, prévention des comportements gênants et bonnes habitudes à mettre en place dès le départ.",
+          "includesTitle": "Ce que comprend la prestation",
+          "includes": [
+            "Un échange personnalisé sur votre projet et votre mode de vie",
+            "Des conseils pour choisir un chien adapté à vos attentes (si vous êtes encore en réflexion)",
+            "Des recommandations sur le matériel et les accessoires utiles",
+            "Des conseils pour préparer l'arrivée du chiot et ses premières semaines à la maison",
+            "Des réponses à toutes vos questions pour aborder cette étape avec confiance"
+          ]
+        },
+        {
+          "id": "desensibilisation",
+          "name": "Désensibilisation à la peur des chiens",
+          "duration": "Selon la problématique",
+          "note": "Prenez contact directement avec nous pour voir comment nous pouvons au mieux vous accompagner.",
+          "text": "La peur des chiens est quelque chose de plus en plus fréquent dans nos vies. Celle-ci peut être liée à un traumatisme ou à une incompréhension de l'animal. Nous intervenons à travers des séances construites spécialement pour vous afin de vous aider à surpasser cette peur.",
+          "includesTitle": "",
+          "includes": []
+        }
+      ]
+    },
+    "en": {
+      "eyebrow": "services",
+      "title": "Support for every situation",
+      "highlights": [
+        "every situation"
+      ],
+      "intro": "Every dog is unique. Here are the different ways I can support you and your companion.",
+      "ctaLabel": "Get in touch",
+      "items": []
+    }
+  },
+  "tarifsPage": {
+    "enabled": true,
+    "fr": {
+      "eyebrow": "les tarifs",
+      "title": "Des tarifs clairs, un accompagnement sur mesure",
+      "highlights": [
+        "sur mesure"
+      ],
+      "paymentInfo": "Les paiements se font par virement, par espèces ou par chèque. Il est possible de régler en deux ou trois fois sans frais.",
+      "grid": [
+        {
+          "name": "Bilan comportemental",
+          "price": "80 €",
+          "note": ""
+        },
+        {
+          "name": "Séance d'éducation canine",
+          "price": "80 €",
+          "note": ""
+        },
+        {
+          "name": "Rééducation / trouble du comportement",
+          "price": "90 €",
+          "note": ""
+        },
+        {
+          "name": "Éducation du chiot (- 6 mois)",
+          "price": "50 €",
+          "note": ""
+        },
+        {
+          "name": "Accompagnement à l'accueil du chiot",
+          "price": "Sur devis",
+          "note": "Dépend de l'avancée de votre projet"
+        },
+        {
+          "name": "Désensibilisation à la peur des chiens",
+          "price": "Sur devis",
+          "note": "Dépend de votre situation"
+        }
+      ],
+      "forfaits": "Des forfaits sont disponibles pour chaque prestation. Les réductions s'appliquent à partir de la troisième séance.",
+      "forfaitsHighlights": [
+        "troisième séance"
+      ],
+      "faqTitle": "Questions sur les tarifs",
+      "faqHighlights": [
+        "tarifs"
+      ],
+      "faq": [
+        {
+          "q": "Dois-je payer deux séances si j'ai deux chiens ?",
+          "a": "Vous n'avez pas à payer deux séances si vous avez deux chiens. Cependant, la séance sera portée sur le travail des deux chiens en même temps et sera moins focalisée sur un chien en particulier. Selon la problématique, il est possible de proposer des séances focalisées sur un seul de vos chiens.",
+          "aHighlights": []
+        },
+        {
+          "q": "Proposez-vous des forfaits ?",
+          "a": "Les forfaits sont disponibles pour chaque prestation. Les réductions s'appliquent à partir de la troisième séance. Le nombre de séances est à l'appréciation de l'éducateur et sera défini après le bilan comportemental et la première séance effectuée.",
+          "aHighlights": [
+            "troisième séance",
+            "défini après le bilan comportemental"
+          ]
+        },
+        {
+          "q": "Combien de séances sont généralement nécessaires ?",
+          "a": "Il n'y a pas de généralité : tous les chiens et toutes les problématiques sont différents. Un chien réactif n'avancera pas de la même façon qu'un autre chien réactif. C'est pour cela que le bilan comportemental est primordial, pour pouvoir observer, évaluer et comprendre le chien dans son individualité.",
+          "aHighlights": [
+            "bilan comportemental"
+          ]
+        }
+      ]
+    },
+    "en": {
+      "eyebrow": "pricing",
+      "title": "Clear pricing, tailored support",
+      "highlights": [
+        "tailored support"
+      ],
+      "paymentInfo": "Payments by bank transfer, cash or cheque. Payment in two or three instalments at no extra cost is possible.",
+      "grid": [],
+      "forfaits": "",
+      "forfaitsHighlights": [],
+      "faqTitle": "Pricing questions",
+      "faqHighlights": [],
+      "faq": []
+    }
+  },
+  "legal": {
+    "fr": {
+      "mentions": {
+        "title": "Mentions légales",
+        "editor": "Divine Dogs — Elisa-Lou Jodor, éducatrice canine comportementaliste. Micro-entreprise, SIRET 104 873 062 00012.",
+        "director": "Directrice de la publication : Elisa-Lou Jodor.",
+        "host": "Hébergeur : OVHcloud — SAS au capital de 50 000 000 €, 2 rue Kellermann, 59100 Roubaix, France.",
+        "contact": "Contact : divinedogspro@gmail.com"
+      },
+      "cgv": {
+        "title": "Conditions Générales de Vente",
+        "cancellation": "Conditions d'annulation : Annulation ou report plus de 48 h avant le rendez-vous : gratuit. Entre 24 h et 48 h avant : le rendez-vous peut être reporté une fois sans frais. Moins de 24 h avant : la séance est due et ne donne pas lieu à remboursement, sauf cas de force majeure tel qu'une maladie du chien ou du propriétaire (sous réserve d'attestation médicale pour l'humain et de certificat du vétérinaire pour le chien). Absence sans prévenir : la séance est considérée comme réalisée et reste due.",
+        "refund": "Politique de remboursement : Divine Dogs s'engage à mettre en œuvre tous les moyens nécessaires afin d'assurer un accompagnement professionnel, personnalisé et adapté aux besoins du binôme chien-humain. L'éducation canine étant une démarche collaborative, les résultats dépendent notamment de l'implication du propriétaire, de la régularité de la mise en pratique des conseils et des caractéristiques propres à chaque chien. En conséquence, aucune obligation de résultat ne peut être garantie. Une insatisfaction portant sur les résultats obtenus ne pourra, à elle seule, justifier un remboursement de la prestation. En cas de difficulté ou de désaccord, le client est invité à contacter Divine Dogs afin de rechercher une solution amiable.",
+        "payment": "Paiement : par virement, espèces ou chèque. Solde le jour de la prestation. Possibilité de régler en deux ou trois fois sans frais."
+      },
+      "confidentialite": {
+        "title": "Politique de confidentialité",
+        "body": "Les données personnelles collectées (nom, prénom, adresse e-mail, numéro de téléphone et toute information communiquée via les formulaires ou lors des échanges) sont utilisées uniquement pour : répondre aux demandes de contact et de renseignements ; organiser, confirmer et assurer le suivi des rendez-vous ; établir les devis, factures et assurer la gestion administrative des prestations ; communiquer avec le client dans le cadre des prestations proposées par Divine Dogs ; respecter les obligations légales et comptables applicables. Les données collectées ne sont utilisées à aucune autre fin sans le consentement préalable du client et ne sont ni vendues ni cédées à des tiers, sauf obligation légale ou nécessité liée à l'exécution de la prestation. Pour toute question relative à vos données : divinedogspro@gmail.com"
+      }
+    },
+    "en": {
+      "mentions": {
+        "title": "Legal notice",
+        "editor": "Divine Dogs — Elisa-Lou Jodor, canine behaviourist educator. Micro-enterprise, SIRET 104 873 062 00012.",
+        "director": "Publication director: Elisa-Lou Jodor.",
+        "host": "Host: OVHcloud — 2 rue Kellermann, 59100 Roubaix, France.",
+        "contact": "Contact: divinedogspro@gmail.com"
+      },
+      "cgv": {
+        "title": "Terms of Sale",
+        "cancellation": "",
+        "refund": "",
+        "payment": ""
+      },
+      "confidentialite": {
+        "title": "Privacy policy",
+        "body": ""
+      }
+    }
   },
   "footer": {
     "year": "2026",
     "fr": {
-      "tagline": "Éducation canine comportementaliste — partout en France",
+      "tagline": "Éducation canine comportementaliste — Toulouse, Bordeaux, Charente",
       "legalTitle": "Légal",
       "legalLinks": [
-        { "label": "Mentions légales", "url": "pages/mentions-legales.html" },
-        { "label": "Politique de confidentialité", "url": "pages/confidentialite.html" }
+        {
+          "label": "Mentions légales",
+          "url": "mentions-legales.html"
+        },
+        {
+          "label": "CGV",
+          "url": "cgv.html"
+        },
+        {
+          "label": "Confidentialité",
+          "url": "confidentialite.html"
+        }
       ]
     },
     "en": {
-      "tagline": "Canine behaviour education — all over France",
+      "tagline": "Canine behaviour education — Toulouse, Bordeaux, Charente",
       "legalTitle": "Legal",
       "legalLinks": [
-        { "label": "Legal notice", "url": "pages/mentions-legales.html" },
-        { "label": "Privacy policy", "url": "pages/confidentialite.html" }
+        {
+          "label": "Legal notice",
+          "url": "mentions-legales.html"
+        },
+        {
+          "label": "Terms",
+          "url": "cgv.html"
+        },
+        {
+          "label": "Privacy",
+          "url": "confidentialite.html"
+        }
       ]
     }
+  },
+  "contactInfo": {
+    "email": "divinedogspro@gmail.com",
+    "phone": "0638110187",
+    "phonePublic": false,
+    "hours": "Du lundi au samedi, 9h-20h, uniquement sur rendez-vous",
+    "areas": "Toulouse, Bordeaux, Charente, Charente-Maritime"
   }
 }

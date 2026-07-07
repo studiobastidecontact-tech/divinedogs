@@ -1,42 +1,24 @@
-Démarrage du site :
-# Divine Dogs v3
+# Divine Dogs — Site vitrine v3.1
 
-Site vitrine d'Elisa-Lou Jaudor — éducatrice canine comportementaliste.
+Site statique (HTML/CSS/JS + data.json). Éducatrice canine comportementaliste Elisa-Lou Jodor.
 
 ## Structure
+- `index.html` — accueil (hero, présentation, valeurs, contact + RGPD, avis, réseaux)
+- `services.html` — page Services (6 prestations détaillées)
+- `tarifs.html` — page Tarifs (grille, paiement, forfaits, FAQ tarifs)
+- `mentions-legales.html` / `cgv.html` / `confidentialite.html` — pages légales
+- `data/data.json` — **source unique de tout le contenu** (tout se modifie ici)
+- `assets/` — css, js (icons/render/main), icônes
 
-```
-/                        → site public
-/admin/                  → panneau d'administration (auth GitHub)
-/assets/                 → CSS, JS, images, icônes
-/data/data.json          → contenu du site (source de vérité)
-/pages/                  → pages légales (mentions, confidentialité)
-```
+## Contenu
+Tout le texte, les prix, les services, les mentions légales vivent dans `data/data.json`.
+Modifier ce fichier = modifier le site. FR/EN gérés par langue (EN à traduire).
 
-## Stack
+## Déploiement
+GitHub Pages, org `studiobastidecontact-tech`, DNS OVH → divinedogs.fr
 
-- HTML/CSS/JS vanilla, zéro framework, zéro build
-- Données dans `data/data.json`, rendues côté client par `render.js`
-- Admin via API GitHub (token personnel) avec Personal Access Token
-- Hébergé sur GitHub Pages, DNS chez OVH, domaine `divinedogs.fr`
-
-## Polices
-
-- **Climate Crisis** (Google Fonts) — logo "DIVINE DOGS"
-- **Inter** (Google Fonts) — corps de texte (alternative moderne à Stack Sans Headline qui n'existe pas sur Google Fonts)
-- **Zalando Sans SemiExpanded** (Google Fonts) — titre "Ce que Divine Dogs n'est pas"
-
-## Palette Pantone
-
-- Jet Black `#000000`
-- Espresso `#3D2B1F`
-- Hazelnut `#BBA98A`
-- Dusty Rose `#C48B9F` ← couleur d'accent pour les mots impactants
-
-## i18n
-
-Le site est bilingue FR/EN. Toggle dans la nav. Pour l'instant les textes EN sont des placeholders, à compléter par Elisa-Lou.
-
-## Mises à jour de contenu
-
-Via `/admin/` avec un token GitHub. Pas besoin de toucher au code.
+## À FAIRE
+- Formulaire de contact : créer un compte Formspree, coller l'endpoint dans `data.json` → `contact.formspreeEndpoint`. Destinataire : divinedogspro@gmail.com
+- Photo hero : swappable via `data.json` → `hero.backgroundImage`
+- Traductions EN des textes longs
+- Admin (mini-CMS) à reconstruire pour la nouvelle structure
