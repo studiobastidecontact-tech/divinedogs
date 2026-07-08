@@ -52,8 +52,14 @@
     const toggle = document.getElementById('menuToggle');
     const links = document.getElementById('navLinks');
     if (toggle && links) {
-      toggle.addEventListener('click', () => links.classList.toggle('open'));
-      links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+      const setMenu = (open) => {
+        links.classList.toggle('open', open);
+        if (nav) nav.classList.toggle('menu-open', open);
+        document.body.classList.toggle('menu-open', open);
+        toggle.innerHTML = window.icon(open ? 'x' : 'menu', 28);
+      };
+      toggle.addEventListener('click', () => setMenu(!links.classList.contains('open')));
+      links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
     }
 
     // Lang toggle

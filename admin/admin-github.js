@@ -22,7 +22,11 @@ window.DD_GH = (function() {
   function clearToken() { sessionStorage.removeItem(TOKEN_KEY); localStorage.removeItem(TOKEN_KEY); }
 
   function headers() {
-    return { 'Authorization': 'token ' + getToken(), 'Accept': 'application/vnd.github+json' };
+    return {
+      'Authorization': 'Bearer ' + getToken(),
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    };
   }
 
   // Encodage base64 UTF-8 sûr
