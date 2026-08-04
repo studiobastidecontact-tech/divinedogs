@@ -258,7 +258,7 @@
   },
   "contact": {
     "enabled": true,
-    "formspreeEndpoint": "",
+    "formspreeEndpoint": "https://formspree.io/f/xoeaazld",
     "fr": {
       "title": "Faites le premier pas, contactez-nous",
       "highlights": [

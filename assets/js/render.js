@@ -207,6 +207,8 @@
               <h3>Merci !</h3><p>${esc(f.success || '')}</p>
             </div>
             <div class="form-fields" id="formFields">
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+              <input type="hidden" name="_subject" value="Nouvelle demande via divinedogs.fr">
               <div class="form-section-label">${esc(f.contactNote || '')}</div>
               <div class="form-double">
                 <div class="form-row"><label>${esc(f.firstName)}<span class="required">*</span></label><input type="text" name="firstName" required></div>
