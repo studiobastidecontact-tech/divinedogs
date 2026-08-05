@@ -48,18 +48,45 @@
       });
     }
 
-    // Mobile menu
-    const toggle = document.getElementById('menuToggle');
-    const links = document.getElementById('navLinks');
-    if (toggle && links) {
-      const setMenu = (open) => {
-        links.classList.toggle('open', open);
-        if (nav) nav.classList.toggle('menu-open', open);
+    // Menu mobile + ancres : tout géré par délégation sur le document.
+    // Lié UNE seule fois, retrouve les éléments à chaque tap (robuste au re-rendu et au scroll).
+    if (!window.__ddNavBound) {
+      window.__ddNavBound = true;
+      const currentPage = () => location.pathname.split('/').pop() || 'index.html';
+      const setMenuState = (open) => {
+        const l = document.getElementById('navLinks');
+        const n = document.getElementById('nav');
+        const t = document.getElementById('menuToggle');
+        if (l) l.classList.toggle('open', open);
+        if (n) n.classList.toggle('menu-open', open);
         document.body.classList.toggle('menu-open', open);
-        toggle.innerHTML = window.icon(open ? 'x' : 'menu', 28);
+        if (t) t.innerHTML = window.icon(open ? 'x' : 'menu', 28);
       };
-      toggle.addEventListener('click', () => setMenu(!links.classList.contains('open')));
-      links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('click', (e) => {
+        // 1) bouton burger (ou son icône) -> ouvrir/fermer
+        if (e.target.closest('#menuToggle')) {
+          const l = document.getElementById('navLinks');
+          setMenuState(!(l && l.classList.contains('open')));
+          return;
+        }
+        // 2) liens
+        const a = e.target.closest('a[href]');
+        if (!a) return;
+        const m = (a.getAttribute('href') || '').match(/^(?:\.\/)?([\w-]+\.html)?#([\w-]+)$/);
+        if (m) {
+          const page = m[1] || 'index.html';
+          const el = document.getElementById(m[2]);
+          if (page === currentPage() && el) {   // ancre sur la page courante -> défilement doux, pas de rechargement
+            e.preventDefault();
+            setMenuState(false);
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.replaceState(null, '', '#' + m[2]);
+            return;
+          }
+        }
+        // lien du menu qui change de page -> fermer le menu proprement avant de naviguer
+        if (a.closest('#navLinks')) setMenuState(false);
+      });
     }
 
     // Lang toggle
@@ -148,6 +175,11 @@
       attachCommon(data, { onLangChange: rerender });
       attachForm(data);
       hideLoading();
+      // arrivée avec une ancre (ex. depuis Services -> index.html#contact) : on descend une fois le contenu prêt
+      if (location.hash && location.hash.length > 1) {
+        const el = document.getElementById(location.hash.slice(1));
+        if (el) setTimeout(() => el.scrollIntoView({ behavior: 'auto', block: 'start' }), 120);
+      }
     });
   }
 

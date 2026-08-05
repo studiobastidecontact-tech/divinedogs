@@ -94,7 +94,7 @@ nav.scrolled .nav-links a { color: var(--espresso); }
 nav.scrolled .lang-toggle { color: var(--espresso); border-color: rgba(61,43,31,.25); }
 .lang-toggle:hover { background: rgba(196,139,159,.2); border-color: var(--rose); }
 .lang-toggle .active-lang { color: var(--rose); }
-.menu-toggle { display: none; background: none; border: none; color: var(--cream); cursor: pointer; padding: .5rem; }
+.menu-toggle { display: none; background: none; border: none; color: var(--cream); cursor: pointer; padding: .5rem; margin: -.25rem; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 nav.scrolled .menu-toggle { color: var(--espresso); }
 
 /* ==== HERO ==== */
